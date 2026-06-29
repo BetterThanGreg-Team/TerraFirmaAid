@@ -1,0 +1,17 @@
+{
+  "type": "terrafirmaaid:static",
+  "damageTypes": ["lightning_bolt"],
+  "algorithm": {
+    "type": "terrafirmaaid:standard",
+    "ignoreOrder": true,
+    "partMap": {
+      "head": [
+        "head"
+      ],
+      "chest": [
+        "left_arm",
+        "right_arm"
+      ]
+    }
+  }
+}

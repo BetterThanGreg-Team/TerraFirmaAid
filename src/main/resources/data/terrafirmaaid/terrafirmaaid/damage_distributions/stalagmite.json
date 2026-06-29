@@ -1,0 +1,13 @@
+{
+  "type": "terrafirmaaid:static",
+  "damageTypes": ["stalagmite"],
+  "algorithm": {
+    "type": "terrafirmaaid:standard",
+    "partMap": {
+      "feet": [
+        "left_foot",
+        "right_foot"
+      ]
+    }
+  }
+}

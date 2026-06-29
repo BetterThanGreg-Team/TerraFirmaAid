@@ -1,0 +1,12 @@
+{
+  "type": "terrafirmaaid:static",
+  "damageTypes": ["falling_anvil"],
+  "algorithm": {
+    "type": "terrafirmaaid:standard",
+    "partMap": {
+      "head": [
+        "head"
+      ]
+    }
+  }
+}

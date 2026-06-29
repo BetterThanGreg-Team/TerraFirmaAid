@@ -1,0 +1,9 @@
+{
+  "type": "terrafirmaaid:static",
+  "damageTypes": ["magic"],
+  "algorithm": {
+    "type": "terrafirmaaid:random",
+    "nearestFirst": false,
+    "tryNoKill": false
+  }
+}

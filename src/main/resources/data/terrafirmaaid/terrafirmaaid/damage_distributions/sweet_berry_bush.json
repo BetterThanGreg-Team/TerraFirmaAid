@@ -1,0 +1,22 @@
+{
+  "type": "terrafirmaaid:static",
+  "damageTypes": ["sweet_berry_bush"],
+  "algorithm": {
+    "type": "terrafirmaaid:standard",
+    "partMap": {
+      "legs": [
+        "right_leg",
+        "left_leg"
+      ],
+      "feet": [
+        "right_foot",
+        "left_foot"
+      ],
+      "chest": [
+        "left_arm",
+        "right_arm",
+        "body"
+      ]
+    }
+  }
+}

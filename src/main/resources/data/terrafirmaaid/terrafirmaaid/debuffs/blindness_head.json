@@ -1,0 +1,16 @@
+{
+  "type": "terrafirmaaid:on_hit",
+  "debuffSlot": "head",
+  "potionName": "blindness",
+  "soundEvent": "terrafirmaaid:debuff.heartbeat",
+  "timeBoundaries": [
+    {
+      "damageTakenThreshold": 2,
+      "effectDuration": 160
+    },
+    {
+      "damageTakenThreshold": 1,
+      "effectDuration": 80
+    }
+  ]
+}

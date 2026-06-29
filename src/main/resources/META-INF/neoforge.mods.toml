@@ -1,0 +1,31 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+
+[[mods]]
+modId="${mod_id}"
+authors="Iskaa303"
+version="${mod_version}"
+displayName="${mod_name}"
+description='''
+TerraFirmaAid is a port of the original First Aid mod by ichttt to Minecraft 1.21.1 and NeoForge.
+It implements a limb-based health system instead of the vanilla global health system.
+'''
+credits="Thanks to ichttt for the original First Aid mod!"
+
+[[dependencies.${mod_id}]]
+    modId="neoforge"
+    type="required"
+    versionRange="[${neo_version},)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"

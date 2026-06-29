@@ -1,0 +1,9 @@
+{
+  "type": "terrafirmaaid:static",
+  "damageTypes": ["drown", "starve"],
+  "algorithm": {
+    "type": "terrafirmaaid:random",
+    "nearestFirst": false,
+    "tryNoKill": true
+  }
+}

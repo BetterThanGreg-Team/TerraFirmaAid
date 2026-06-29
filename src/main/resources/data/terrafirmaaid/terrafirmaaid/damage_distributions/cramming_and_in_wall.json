@@ -1,0 +1,9 @@
+{
+  "type": "terrafirmaaid:static",
+  "damageTypes": ["cramming", "in_wall"],
+  "algorithm": {
+    "type": "terrafirmaaid:random",
+    "nearestFirst": false,
+    "tryNoKill": true
+  }
+}

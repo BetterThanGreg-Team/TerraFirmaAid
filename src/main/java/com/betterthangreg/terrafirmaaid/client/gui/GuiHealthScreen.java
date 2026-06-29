@@ -1,0 +1,346 @@
+/*
+ * FirstAid
+ * Copyright (C) 2017-2024
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.betterthangreg.terrafirmaaid.client.gui;
+
+import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.betterthangreg.terrafirmaaid.FirstAid;
+import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractDamageablePart;
+import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
+import com.betterthangreg.terrafirmaaid.api.enums.EnumPlayerPart;
+import com.betterthangreg.terrafirmaaid.api.healing.ItemHealing;
+import com.betterthangreg.terrafirmaaid.client.ClientHooks;
+import com.betterthangreg.terrafirmaaid.client.util.EventCalendar;
+import com.betterthangreg.terrafirmaaid.client.util.HealthRenderUtils;
+import com.betterthangreg.terrafirmaaid.common.network.MessageApplyHealingItem;
+import com.betterthangreg.terrafirmaaid.common.network.MessageClientRequest;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.StringUtil;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class GuiHealthScreen extends Screen {
+    public static final int xSize = 256;
+    public static final int ySize = 137;
+    public static final ItemStack BED_ITEMSTACK = new ItemStack(Items.RED_BED);
+    private static final DecimalFormat FORMAT = new DecimalFormat("##.#");
+
+    public static GuiHealthScreen INSTANCE;
+    public static boolean isOpen = false;
+    private static int funTicks = 0; // mod 500
+
+    private final AbstractPlayerDamageModel damageModel;
+    private final List<GuiHoldButton> holdButtons = new ArrayList<>();
+    private final boolean disableButtons;
+
+    public int guiLeft;
+    public int guiTop;
+    public AbstractButton cancelButton;
+    private AbstractButton head, leftArm, leftLeg, leftFoot, body, rightArm, rightLeg, rightFoot;
+    private InteractionHand activeHand;
+
+    public GuiHealthScreen(AbstractPlayerDamageModel damageModel) {
+        super(Component.translatable("terrafirmaaid.gui.healthscreen"));
+        this.damageModel = damageModel;
+        disableButtons = true;
+    }
+
+    public GuiHealthScreen(AbstractPlayerDamageModel damageModel, InteractionHand activeHand) {
+        super(Component.translatable("terrafirmaaid.gui.healthscreen"));
+        this.damageModel = damageModel;
+        this.activeHand = activeHand;
+        disableButtons = false;
+    }
+
+    public static void tickFun() {
+        funTicks++;
+        if (funTicks > 500) {
+            funTicks = (int) (Math.random() * 100);
+        }
+    }
+
+    @Override
+    public void init() {
+        isOpen = true;
+        this.guiLeft = (this.width - xSize) / 2;
+        this.guiTop = (this.height - ySize) / 2;
+
+        head = new GuiHoldButton(1, this.guiLeft + 4, this.guiTop + 8, 52, 20, Component.translatable("terrafirmaaid.gui.head"), false);
+        addRenderableWidget(head);
+
+        leftArm = new GuiHoldButton(2, this.guiLeft + 4, this.guiTop + 33, 52, 20, Component.translatable("terrafirmaaid.gui.left_arm"), false);
+        addRenderableWidget(leftArm);
+        leftLeg = new GuiHoldButton(3, this.guiLeft + 4, this.guiTop + 58, 52, 20, Component.translatable("terrafirmaaid.gui.left_leg"), false);
+        addRenderableWidget(leftLeg);
+        leftFoot = new GuiHoldButton(4, this.guiLeft + 4, this.guiTop + 83, 52, 20, Component.translatable("terrafirmaaid.gui.left_foot"), false);
+        addRenderableWidget(leftFoot);
+
+        body = new GuiHoldButton(5, this.guiLeft + 199, this.guiTop + 8, 52, 20, Component.translatable("terrafirmaaid.gui.body"), true);
+        addRenderableWidget(body);
+
+        rightArm = new GuiHoldButton(6, this.guiLeft + 199, this.guiTop + 33, 52, 20, Component.translatable("terrafirmaaid.gui.right_arm"), true);
+        addRenderableWidget(rightArm);
+        rightLeg = new GuiHoldButton(7, this.guiLeft + 199, this.guiTop + 58, 52, 20, Component.translatable("terrafirmaaid.gui.right_leg"), true);
+        addRenderableWidget(rightLeg);
+        rightFoot = new GuiHoldButton(8, this.guiLeft + 199, this.guiTop + 83, 52, 20, Component.translatable("terrafirmaaid.gui.right_foot"), true);
+        addRenderableWidget(rightFoot);
+
+        if (disableButtons) {
+            head.active = false;
+            leftArm.active = false;
+            leftLeg.active = false;
+            leftFoot.active = false;
+            body.active = false;
+            rightArm.active = false;
+            rightLeg.active = false;
+            rightFoot.active = false;
+        }
+
+        cancelButton = Button.builder(Component.translatable(disableButtons ? "gui.done" : "gui.cancel"), button -> onClose())
+                .bounds(this.width / 2 - 100, this.height - 50, 200, 20)
+                .build();
+        addRenderableWidget(cancelButton);
+
+        if (this.minecraft.getDebugOverlay().showDebugScreen()) {
+            Button refresh = Button.builder(Component.literal("resync"), button -> {
+                PacketDistributor.sendToServer(new MessageClientRequest(MessageClientRequest.TypeEnum.REQUEST_REFRESH));
+                FirstAid.LOGGER.info("Requesting refresh");
+                minecraft.player.displayClientMessage(Component.literal("Re-downloading health data from server..."), true);
+                onClose();
+            }).bounds(this.guiLeft + 218, this.guiTop + 115, 36, 20).build();
+            addRenderableWidget(refresh);
+        }
+
+        holdButtons.clear();
+        for (AbstractWidget button : this.getButtons()) {
+            if (button instanceof GuiHoldButton holdButton) {
+                int holdTime = Integer.MAX_VALUE;
+                if (activeHand != null) {
+                    ItemStack itemInHand = minecraft.player.getItemInHand(activeHand);
+                    if (itemInHand.getItem() instanceof ItemHealing itemHealing) {
+                        holdTime = itemHealing.getApplyTime(itemInHand);
+                    }
+                }
+                holdButton.setup(holdTime);
+                holdButtons.add(holdButton);
+            }
+        }
+
+        super.init();
+    }
+
+    @Override
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        //Setup background
+        super.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
+        guiGraphics.fillGradient(this.guiLeft, this.guiTop, this.guiLeft + xSize, this.guiTop + ySize, -16777216, -16777216);
+        net.minecraft.client.renderer.texture.AbstractTexture texture = this.minecraft.getTextureManager().getTexture(HealthRenderUtils.SHOW_WOUNDS_LOCATION);
+        if (texture != null) {
+            texture.setFilter(false, false);
+        }
+        guiGraphics.blit(HealthRenderUtils.SHOW_WOUNDS_LOCATION, this.guiLeft, this.guiTop, 0, 0, xSize, ySize);
+        //Player
+        int entityLookX = this.guiLeft + (xSize / 2) - mouseX;
+        int entityLookY = this.guiTop + 20 - mouseY;
+        float entityLookMouseX = (float) mouseX;
+        float entityLookMouseY = (float) mouseY;
+        if (EventCalendar.isGuiFun()) {
+            if (EventCalendar.isHalloween()) {
+                // Make it spoooky
+                if ((funTicks > 250 && funTicks < 270) || (funTicks > 330 && funTicks < 340)) {
+                    entityLookX = 0;
+                    entityLookY = 0;
+                    entityLookMouseX = (this.width / 2.0F);
+                    entityLookMouseY = (this.height / 2.0F - 5.0F);
+                } else if ((funTicks > 480 && funTicks < 500) || (funTicks > 340 && funTicks < 350 )) {
+                    entityLookX = -entityLookX;
+                    entityLookY = -entityLookY;
+                    entityLookMouseX = (this.width / 2.0F) + entityLookX;
+                    entityLookMouseY = (this.height / 2.0F - 5.0F) + entityLookY;
+                }
+            } else {
+                entityLookX = -entityLookX;
+                entityLookY = -entityLookY;
+                entityLookMouseX = (this.width / 2.0F) + entityLookX;
+                entityLookMouseY = (this.height / 2.0F - 5.0F) + entityLookY;
+            }
+        }
+        InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, this.width / 2 - 25, this.height / 2 - 57, this.width / 2 + 25, this.height / 2 + 33, 45, 0.0625F, entityLookMouseX, entityLookMouseY, minecraft.player);
+
+        //Button
+        super.render(guiGraphics, mouseX, mouseY, partialTicks);
+
+        //Text info
+        int morphineTicks = damageModel.getMorphineTicks();
+        if (morphineTicks > 0)
+            guiGraphics.drawCenteredString(this.minecraft.font, I18n.get("terrafirmaaid.gui.morphine_left", StringUtil.formatTickDuration(morphineTicks, 20.0F)), this.guiLeft + (xSize / 2), this.guiTop + ySize - (this.activeHand == null ? 21 : 29), 0xFFFFFF);
+        if (this.activeHand != null)
+            guiGraphics.drawCenteredString(this.minecraft.font, I18n.get("terrafirmaaid.gui.apply_hint"), this.guiLeft + (xSize / 2), this.guiTop + ySize - (morphineTicks == 0 ? 21 : 11), 0xFFFFFF);
+
+        //Health
+        drawHealth(guiGraphics, damageModel.HEAD, false, 14);
+        drawHealth(guiGraphics, damageModel.LEFT_ARM, false, 39);
+        drawHealth(guiGraphics, damageModel.LEFT_LEG, false, 64);
+        drawHealth(guiGraphics, damageModel.LEFT_FOOT, false, 89);
+        drawHealth(guiGraphics, damageModel.BODY, true, 14);
+        drawHealth(guiGraphics, damageModel.RIGHT_ARM, true, 39);
+        drawHealth(guiGraphics, damageModel.RIGHT_LEG, true, 64);
+        drawHealth(guiGraphics, damageModel.RIGHT_FOOT, true, 89);
+
+        //Tooltip
+        guiGraphics.pose().pushPose();
+        tooltipButton(guiGraphics, head, damageModel.HEAD, mouseX, mouseY);
+        tooltipButton(guiGraphics, leftArm, damageModel.LEFT_ARM, mouseX, mouseY);
+        tooltipButton(guiGraphics, leftLeg, damageModel.LEFT_LEG, mouseX, mouseY);
+        tooltipButton(guiGraphics, leftFoot, damageModel.LEFT_FOOT, mouseX, mouseY);
+        tooltipButton(guiGraphics, body, damageModel.BODY, mouseX, mouseY);
+        tooltipButton(guiGraphics, rightArm, damageModel.RIGHT_ARM, mouseX, mouseY);
+        tooltipButton(guiGraphics, rightLeg, damageModel.RIGHT_LEG, mouseX, mouseY);
+        tooltipButton(guiGraphics, rightFoot, damageModel.RIGHT_FOOT, mouseX, mouseY);
+        guiGraphics.pose().popPose();
+
+        //Sleep info setup
+        double sleepHealing = FirstAidConfig.SERVER.sleepHealPercentage.get();
+        int bedX = guiLeft + 3;
+        int bedY = (guiTop + ySize) - 19;
+
+        //Sleep info icon
+        guiGraphics.renderItem(BED_ITEMSTACK, bedX, bedY);
+
+        //Sleep info tooltip
+        if (mouseX >= bedX && mouseY >= bedY && mouseX < bedX + 16 && mouseY < bedY + 16) {
+            Component s = sleepHealing == 0D ? Component.translatable("terrafirmaaid.gui.no_sleep_heal") : Component.translatable("terrafirmaaid.gui.sleep_heal_amount", FORMAT.format(sleepHealing * 100));
+            guiGraphics.renderTooltip(font, s, mouseX, mouseY);
+        }
+
+        holdButtonMouseCallback(guiGraphics); //callback: check if buttons are finish
+    }
+
+    private void tooltipButton(GuiGraphics guiGraphics, AbstractButton button, AbstractDamageablePart part, int mouseX, int mouseY) {
+        boolean enabled = part.activeHealer == null;
+        if (!enabled && button.isHoveredOrFocused()) {
+            guiGraphics.renderComponentTooltip(font, Arrays.asList(Component.literal(I18n.get("terrafirmaaid.gui.active_item") + ": " + I18n.get(part.activeHealer.stack.getDescriptionId())), Component.translatable("terrafirmaaid.gui.next_heal", Math.round((part.activeHealer.ticksPerHeal.getAsInt() - part.activeHealer.getTicksPassed()) / 20F))), mouseX, mouseY);
+        }
+        if (!disableButtons) button.active = enabled;
+    }
+
+    public void drawHealth(GuiGraphics guiGraphics, AbstractDamageablePart damageablePart, boolean right, int yOffset) {
+        PoseStack stack = guiGraphics.pose();
+        stack.pushPose();
+        int xTranslation = guiLeft + (right ? getRightOffset(damageablePart) : 57);
+        HealthRenderUtils.drawHealth(guiGraphics, this.minecraft.font, damageablePart, xTranslation, guiTop + yOffset, true);
+        stack.popPose();
+    }
+
+    private static int getRightOffset(AbstractDamageablePart damageablePart) {
+        if (HealthRenderUtils.drawAsString(damageablePart, true)) return 200 - 40;
+        return 200 - Math.min(40, HealthRenderUtils.getMaxHearts(damageablePart.getMaxHealth()) * 9 + HealthRenderUtils.getMaxHearts(damageablePart.getAbsorption()) * 9 + 2);
+    }
+
+    @Override
+    public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
+        if (super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_))
+            return true;
+        if (ClientHooks.SHOW_WOUNDS.isActiveAndMatches(InputConstants.getKey(p_keyPressed_1_, p_keyPressed_2_))) {
+            onClose();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseReleased(double p_mouseReleased_1_, double p_mouseReleased_3_, int p_mouseReleased_5_) {
+        holdButtonMouseCallback(null);
+        return super.mouseReleased(p_mouseReleased_1_, p_mouseReleased_3_, p_mouseReleased_5_);
+    }
+
+    @Override
+    public void mouseMoved(double xPos, double yPos) {
+        for (GuiHoldButton holdButton : this.holdButtons) {
+            holdButton.mouseMoved(xPos, yPos);
+        }
+    }
+
+    protected void holdButtonMouseCallback(GuiGraphics guiGraphics) {
+        for (GuiHoldButton button : this.holdButtons) {
+            int timeLeft = button.getTimeLeft();
+            if (timeLeft == 0) {
+                //We are officially done
+                button.reset();
+                EnumPlayerPart playerPart = EnumPlayerPart.VALUES[button.id - 1];
+                PacketDistributor.sendToServer(new MessageApplyHealingItem(playerPart, activeHand));
+                AbstractDamageablePart part = damageModel.getFromEnum(playerPart);
+                ItemStack itemInHand = minecraft.player.getItemInHand(this.activeHand);
+                if (itemInHand.getItem() instanceof ItemHealing itemHealing) {
+                    part.activeHealer = itemHealing.createNewHealer(itemInHand);
+                }
+                onClose();
+            } else if (guiGraphics == null) {
+                button.reset();
+            } else if (timeLeft != -1) {
+                float timeInSecs = (timeLeft / 1000F);
+                if (timeInSecs < 0F) timeInSecs = 0F;
+                guiGraphics.blit(HealthRenderUtils.SHOW_WOUNDS_LOCATION, button.getX() + (button.isRightSide ? 56 : -25), button.getY() - 2, button.isRightSide ? 2 : 0, 169, 22, 24);
+                guiGraphics.drawString(font, HealthRenderUtils.TEXT_FORMAT.format(timeInSecs), button.getX() + (button.isRightSide ? 60 : -20), button.getY() + 6, 0xFFFFFF);
+            }
+        }
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldCloseOnEsc() {
+        return true;
+    }
+
+    @Override
+    public void onClose() {
+        INSTANCE = null;
+        isOpen = false;
+        super.onClose();
+    }
+
+    public List<AbstractWidget> getButtons() {
+        return (List<AbstractWidget>) (Object) this.renderables;
+    }
+
+    @Override
+    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        // Do nothing to prevent double background rendering from super.render
+    }
+}

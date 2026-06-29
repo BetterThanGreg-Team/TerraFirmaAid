@@ -1,0 +1,9 @@
+{
+  "type": "terrafirmaaid:tag",
+  "tag": "minecraft:is_explosion",
+  "algorithm": {
+    "type": "terrafirmaaid:equal",
+    "reductionMultiplier": 0.8,
+    "tryNoKill": false
+  }
+}

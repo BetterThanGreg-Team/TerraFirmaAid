@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,8 +18,8 @@
 
 package com.betterthangreg.terrafirmaaid.common.potion;
 
-import com.betterthangreg.terrafirmaaid.FirstAid;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.common.damagesystem.distribution.DamageDistribution;
 import com.betterthangreg.terrafirmaaid.common.damagesystem.distribution.RandomDamageDistributionAlgorithm;
@@ -49,7 +49,7 @@ public class PotionPoisonPatched extends MobEffect {
 
     @Override
     public boolean applyEffectTick(@Nonnull LivingEntity entity, int amplifier) {
-        if (entity instanceof Player && !(entity instanceof FakePlayer) && (FirstAidConfig.SERVER.causeDeathBody.get() || FirstAidConfig.SERVER.causeDeathHead.get())) {
+        if (entity instanceof Player && !(entity instanceof FakePlayer) && (TerraFirmaAidConfig.SERVER.causeDeathBody.get() || TerraFirmaAidConfig.SERVER.causeDeathHead.get())) {
             if (entity.level().isClientSide || !entity.isAlive() || entity.isInvulnerableTo(entity.damageSources().magic()))
                 return false;
             if (entity.isSleeping())
@@ -62,7 +62,7 @@ public class PotionPoisonPatched extends MobEffect {
                     SoundEvent sound = (SoundEvent) getHurtSound.invoke(player, entity.damageSources().magic());
                     player.level().playSound(null, player.getX(), player.getY(), player.getZ(), sound, player.getSoundSource(), (float) getSoundVolume.invoke(player), (float) getVoicePitch.invoke(player));
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    FirstAid.LOGGER.error("Could not play hurt sound!", e);
+                    TerraFirmaAid.LOGGER.error("Could not play hurt sound!", e);
                 }
             }
             return true;

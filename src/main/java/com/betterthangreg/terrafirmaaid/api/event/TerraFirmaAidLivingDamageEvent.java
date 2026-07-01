@@ -1,5 +1,5 @@
 /*
- * FirstAid API
+ * TerraFirmaAid API
  * Copyright (c) 2017-2024
  *
  * This library is free software; you can redistribute it and/or
@@ -29,13 +29,13 @@ import net.neoforged.bus.api.ICancellableEvent;
  * Fired when the damage has been applied.
  * Canceling this event will cause the damage to be reset to {@link #getBeforeDamage()}
  */
-public class FirstAidLivingDamageEvent extends PlayerEvent implements ICancellableEvent {
+public class TerraFirmaAidLivingDamageEvent extends PlayerEvent implements ICancellableEvent {
     private final AbstractPlayerDamageModel afterDamageDone;
     private final AbstractPlayerDamageModel beforeDamageDone;
     private final DamageSource source;
     private final float undistributedDamage;
 
-    public FirstAidLivingDamageEvent(Player entity, AbstractPlayerDamageModel afterDamageDone, AbstractPlayerDamageModel beforeDamageDone, DamageSource source, float undistributedDamage) {
+    public TerraFirmaAidLivingDamageEvent(Player entity, AbstractPlayerDamageModel afterDamageDone, AbstractPlayerDamageModel beforeDamageDone, DamageSource source, float undistributedDamage) {
         super(entity);
         this.afterDamageDone = afterDamageDone;
         this.beforeDamageDone = beforeDamageDone;

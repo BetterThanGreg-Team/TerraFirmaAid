@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.client.gui.Gui;
 
-public class FirstaidIngameGui {
+public class TerraFirmaAidIngameGui {
 
     private static int lastProcessedActualHealth = -1;
 

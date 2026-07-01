@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,9 +18,10 @@
 
 package com.betterthangreg.terrafirmaaid.common;
 
-import com.betterthangreg.terrafirmaaid.FirstAid;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
+import com.betterthangreg.terrafirmaaid.common.tfc.TFCCompat;
 import com.betterthangreg.terrafirmaaid.api.distribution.IDamageDistributionAlgorithm;
 import com.betterthangreg.terrafirmaaid.api.enums.EnumPlayerPart;
 import com.betterthangreg.terrafirmaaid.common.damagesystem.distribution.DamageDistribution;
@@ -29,7 +30,7 @@ import com.betterthangreg.terrafirmaaid.common.damagesystem.distribution.RandomD
 import com.betterthangreg.terrafirmaaid.common.damagesystem.distribution.StandardDamageDistributionAlgorithm;
 import com.betterthangreg.terrafirmaaid.common.network.MessageConfiguration;
 import com.betterthangreg.terrafirmaaid.common.network.MessageSyncDamageModel;
-import com.betterthangreg.terrafirmaaid.common.registries.FirstAidRegistryLookups;
+import com.betterthangreg.terrafirmaaid.common.registries.TerraFirmaAidRegistryLookups;
 import com.betterthangreg.terrafirmaaid.common.util.CommonUtils;
 import com.betterthangreg.terrafirmaaid.common.util.PlayerSizeHelper;
 import net.minecraft.resources.ResourceLocation;
@@ -108,7 +109,7 @@ public class EventHandler {
         }
 
         boolean addStat = amountToDamage < 3.4028235E37F;
-        IDamageDistributionAlgorithm damageDistribution = FirstAidRegistryLookups.getDamageDistributions(source.type());
+        IDamageDistributionAlgorithm damageDistribution = TerraFirmaAidRegistryLookups.getDamageDistributions(source.type());
 
         if (source.is(DamageTypeTags.IS_PROJECTILE)) {
             Pair<Entity, HitResult> rayTraceResult = hitList.remove(player);
@@ -227,7 +228,7 @@ public class EventHandler {
         } else {
             return;
         }
-        LootPool.Builder builder = LootPool.lootPool().name("firstaid_main").setRolls(poolRolls);
+        LootPool.Builder builder = LootPool.lootPool().name("terrafirmaaid_main").setRolls(poolRolls);
         builder.add(LootItem.lootTableItem(RegistryObjects.BANDAGE::get)
                     .apply(SetItemCountFunction.setCount(bandageMax))
                     .setWeight(bandage)
@@ -249,26 +250,50 @@ public class EventHandler {
         if (entity.isDeadOrDying() || !CommonUtils.hasDamageModel(entity))
             return;
         event.setCanceled(true);
-        if (entity.level().isClientSide || !FirstAidConfig.SERVER.allowOtherHealingItems.get())
+        if (entity.level().isClientSide || !TerraFirmaAidConfig.SERVER.allowOtherHealingItems.get())
             return;
+
+        // TFC compatibility: if TFC is loaded and override is disabled, don't block TFC regen
+        // We still cancel the event but only distribute our own healing for non-TFC sources
         float amount = event.getAmount();
-        //Hacky shit to reduce vanilla regen
-        if (Arrays.stream(Thread.currentThread().getStackTrace()).anyMatch(stackTraceElement -> stackTraceElement.getClassName().equals(FoodData.class.getName()))) {
-            if (FirstAidConfig.SERVER.allowNaturalRegeneration.get())
-                amount = amount * (float) (double) FirstAidConfig.SERVER.naturalRegenMultiplier.get();
+
+        // Check if this is natural regen (from FoodData)
+        boolean isNaturalRegen = Arrays.stream(Thread.currentThread().getStackTrace()).anyMatch(
+                stackTraceElement -> stackTraceElement.getClassName().equals(FoodData.class.getName()));
+
+        if (isNaturalRegen) {
+            if (TFCCompat.shouldOverrideTFCRegen()) {
+                // We override TFC regen - apply our multiplier
+                if (TerraFirmaAidConfig.SERVER.allowNaturalRegeneration.get())
+                    amount *= (float) (double) TerraFirmaAidConfig.SERVER.naturalRegenMultiplier.get();
+                else
+                    return; // TFC regen blocked entirely
+            } else if (TFCCompat.isTFCLoaded()) {
+                // TFC is loaded and we're not overriding - let TFC handle natural regen
+                return;
+            } else {
+                // Vanilla - apply our multiplier if enabled
+                if (TerraFirmaAidConfig.SERVER.allowNaturalRegeneration.get())
+                    amount *= (float) (double) TerraFirmaAidConfig.SERVER.naturalRegenMultiplier.get();
+                else
+                    return; // Vanilla regen blocked
+            }
         } else {
-            amount = amount * (float) (double) FirstAidConfig.SERVER.otherRegenMultiplier.get();
+            // External healing (potions, etc.)
+            amount *= (float) (double) TerraFirmaAidConfig.SERVER.otherRegenMultiplier.get();
         }
-        if (FirstAidConfig.GENERAL.debug.get()) {
+
+        if (TerraFirmaAidConfig.GENERAL.debug.get()) {
             CommonUtils.debugLogStacktrace("External healing: : " + amount);
         }
         HealthDistribution.distributeHealth(amount, (Player) entity, true);
     }
 
+
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (!event.getEntity().level().isClientSide) {
-            FirstAid.LOGGER.debug("Sending damage model to {}", event.getEntity().getName());
+            TerraFirmaAid.LOGGER.debug("Sending damage model to {}", event.getEntity().getName());
             AbstractPlayerDamageModel damageModel = CommonUtils.getDamageModel(event.getEntity());
             if (damageModel == null) return;
             if (damageModel.hasTutorial)
@@ -283,12 +308,17 @@ public class EventHandler {
         hitList.remove(event.getEntity());
     }
 
-    @SubscribeEvent
     public static void onWorldLoad(LevelEvent.Load event) {
         LevelAccessor world = event.getLevel();
-        if (!world.isClientSide() && world instanceof Level)
-            ((Level) world).getGameRules().getRule(GameRules.RULE_NATURAL_REGENERATION).set(FirstAidConfig.SERVER.allowNaturalRegeneration.get(), ((Level) world).getServer());
+        if (!world.isClientSide() && world instanceof Level) {
+            // TFC compatibility: if TFC is loaded and override is disabled, don't touch the gamerule
+            if (!TFCCompat.isTFCLoaded() || TFCCompat.shouldOverrideTFCRegen()) {
+                ((Level) world).getGameRules().getRule(GameRules.RULE_NATURAL_REGENERATION)
+                        .set(TerraFirmaAidConfig.SERVER.allowNaturalRegeneration.get(), ((Level) world).getServer());
+            }
+        }
     }
+
 
     @SubscribeEvent
     public static void onDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event) {
@@ -303,16 +333,16 @@ public class EventHandler {
     @SubscribeEvent
     public static void tagsUpdated(TagsUpdatedEvent event) {
         if (event.shouldUpdateStaticData()) {
-            FirstAidRegistryLookups.init(event.getRegistryAccess(), event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED);
+            TerraFirmaAidRegistryLookups.init(event.getRegistryAccess(), event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED);
         }
     }
 
     @SubscribeEvent
     public static void onServerStop(ServerStoppedEvent event) {
-        FirstAid.LOGGER.debug("Cleaning up");
+        TerraFirmaAid.LOGGER.debug("Cleaning up");
         com.betterthangreg.terrafirmaaid.common.EventHandler.TUTORIAL_DONE.clear();
         EventHandler.hitList.clear();
-        FirstAidRegistryLookups.reset();
+        TerraFirmaAidRegistryLookups.reset();
     }
 
     @SubscribeEvent

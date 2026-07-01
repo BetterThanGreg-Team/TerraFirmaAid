@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,15 +18,15 @@
 
 package com.betterthangreg.terrafirmaaid.common.damagesystem;
 
-import com.betterthangreg.terrafirmaaid.FirstAid;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractDamageablePart;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPartHealer;
 import com.betterthangreg.terrafirmaaid.api.debuff.IDebuff;
 import com.betterthangreg.terrafirmaaid.api.enums.EnumDebuffSlot;
 import com.betterthangreg.terrafirmaaid.api.enums.EnumPlayerPart;
 import com.betterthangreg.terrafirmaaid.api.healing.ItemHealing;
-import com.betterthangreg.terrafirmaaid.common.registries.FirstAidRegistryLookups;
+import com.betterthangreg.terrafirmaaid.common.registries.TerraFirmaAidRegistryLookups;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -124,7 +124,7 @@ public class DamageablePart extends AbstractDamageablePart {
     public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
         CompoundTag compound = new CompoundTag();
         compound.putFloat("health", currentHealth);
-        if (FirstAidConfig.SERVER.scaleMaxHealth.get())
+        if (TerraFirmaAidConfig.SERVER.scaleMaxHealth.get())
             compound.putInt("maxHealth", maxHealth);
         if (absorption > 0F)
             compound.putFloat("absorption", absorption);
@@ -140,7 +140,7 @@ public class DamageablePart extends AbstractDamageablePart {
     public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
         if (nbt == null)
             return;
-        if (nbt.contains("maxHealth") && FirstAidConfig.SERVER.scaleMaxHealth.get())
+        if (nbt.contains("maxHealth") && TerraFirmaAidConfig.SERVER.scaleMaxHealth.get())
             maxHealth = nbt.getInt("maxHealth");
         currentHealth = Math.min(maxHealth, nbt.getFloat("health"));
         ItemStack stack = null;
@@ -155,7 +155,7 @@ public class DamageablePart extends AbstractDamageablePart {
                 healer = itemHealing.createNewHealer(stack);
             }
             if (healer == null) {
-                FirstAid.LOGGER.warn("Failed to lookup healer for item {}", stack.getItem());
+                TerraFirmaAid.LOGGER.warn("Failed to lookup healer for item {}", stack.getItem());
             } else {
                 activeHealer = healer.loadNBT(nbt.getInt("itemTicks"), nbt.getInt("itemHeals"));
             }
@@ -172,7 +172,7 @@ public class DamageablePart extends AbstractDamageablePart {
 
     @Override
     public void setAbsorption(float absorption) {
-        if (absorption > 4F && FirstAidConfig.SERVER.capMaxHealth.get())
+        if (absorption > 4F && TerraFirmaAidConfig.SERVER.capMaxHealth.get())
             absorption = 4F;
         if (absorption > 32F) absorption = 32F;
         this.absorption = absorption;
@@ -186,7 +186,7 @@ public class DamageablePart extends AbstractDamageablePart {
 
     @Override
     public void setMaxHealth(int maxHealth) {
-        if (maxHealth > 12 && FirstAidConfig.SERVER.capMaxHealth.get())
+        if (maxHealth > 12 && TerraFirmaAidConfig.SERVER.capMaxHealth.get())
             maxHealth = 12;
         if (maxHealth > 128) //Apply a max cap even if disabled - This is already OP and I know no use case where the limit might be reached
             maxHealth = 128;

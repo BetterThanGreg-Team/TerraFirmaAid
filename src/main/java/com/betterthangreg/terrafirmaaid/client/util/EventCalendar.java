@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 package com.betterthangreg.terrafirmaaid.client.util;
 
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 
 import java.util.Calendar;
 
@@ -67,7 +67,7 @@ public class EventCalendar {
     }
 
     public static boolean isGuiFun() {
-        return (isHalloween || isAFDay) && FirstAidConfig.CLIENT.enableEasterEggs.get();
+        return (isHalloween || isAFDay) && TerraFirmaAidConfig.CLIENT.enableEasterEggs.get();
     }
 
     public static boolean isNewYear() {

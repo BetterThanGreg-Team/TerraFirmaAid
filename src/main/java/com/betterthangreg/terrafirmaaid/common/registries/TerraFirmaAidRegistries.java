@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 package com.betterthangreg.terrafirmaaid.common.registries;
 
 import com.mojang.serialization.Codec;
-import com.betterthangreg.terrafirmaaid.FirstAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
 import com.betterthangreg.terrafirmaaid.api.debuff.IDebuffBuilder;
 import com.betterthangreg.terrafirmaaid.api.distribution.IDamageDistributionAlgorithm;
 import com.betterthangreg.terrafirmaaid.api.distribution.IDamageDistributionTarget;
@@ -40,7 +40,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 
-public final class FirstAidRegistries {
+public final class TerraFirmaAidRegistries {
 
     public static class Keys {
         public static final ResourceKey<Registry<Codec<? extends IDamageDistributionAlgorithm>>> DAMAGE_DISTRIBUTION_ALGORITHMS = key("damage_distribution_algorithms");
@@ -51,19 +51,19 @@ public final class FirstAidRegistries {
         public static final ResourceKey<Registry<IDebuffBuilder>> DEBUFFS = key("debuffs");
 
         private static <T> ResourceKey<Registry<T>> key(String name) {
-            return ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FirstAid.MODID, name));
+            return ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(TerraFirmaAid.MODID, name));
         }
     }
 
     // --- DEFERRED REGISTERS ---
     static final DeferredRegister<Codec<? extends IDamageDistributionAlgorithm>> DEFERRED_DAMAGE_DISTRIBUTION_ALGORITHMS = 
-        DeferredRegister.create(Keys.DAMAGE_DISTRIBUTION_ALGORITHMS, FirstAid.MODID);
+        DeferredRegister.create(Keys.DAMAGE_DISTRIBUTION_ALGORITHMS, TerraFirmaAid.MODID);
         
     static final DeferredRegister<Codec<? extends IDamageDistributionTarget>> DEFERRED_DAMAGE_DISTRIBUTION_TARGETS = 
-        DeferredRegister.create(Keys.DAMAGE_DISTRIBUTION_TARGETS, FirstAid.MODID);
+        DeferredRegister.create(Keys.DAMAGE_DISTRIBUTION_TARGETS, TerraFirmaAid.MODID);
         
     static final DeferredRegister<Codec<? extends IDebuffBuilder>> DEFERRED_DEBUFF_BUILDERS = 
-        DeferredRegister.create(Keys.DEBUFF_BUILDERS, FirstAid.MODID);
+        DeferredRegister.create(Keys.DEBUFF_BUILDERS, TerraFirmaAid.MODID);
 
     // --- REGISTRY DEFINITIONS ---
     public static final Registry<Codec<? extends IDamageDistributionAlgorithm>> DAMAGE_DISTRIBUTION_ALGORITHMS = 
@@ -90,14 +90,14 @@ public final class FirstAidRegistries {
 
     // --- DATA DRIVEN REGISTRIES
     public static void createDataPackRegistries(DataPackRegistryEvent.NewRegistry event) {
-        event.dataPackRegistry(Keys.DAMAGE_DISTRIBUTIONS, FirstAidBaseCodecs.DAMAGE_DISTRIBUTION_TARGETS_DIRECT_CODEC, FirstAidBaseCodecs.DAMAGE_DISTRIBUTION_TARGETS_DIRECT_CODEC);
-        event.dataPackRegistry(Keys.DEBUFFS, FirstAidBaseCodecs.DEBUFF_BUILDERS_DIRECT_CODEC, FirstAidBaseCodecs.DEBUFF_BUILDERS_DIRECT_CODEC);
+        event.dataPackRegistry(Keys.DAMAGE_DISTRIBUTIONS, TerraFirmaAidBaseCodecs.DAMAGE_DISTRIBUTION_TARGETS_DIRECT_CODEC, TerraFirmaAidBaseCodecs.DAMAGE_DISTRIBUTION_TARGETS_DIRECT_CODEC);
+        event.dataPackRegistry(Keys.DEBUFFS, TerraFirmaAidBaseCodecs.DEBUFF_BUILDERS_DIRECT_CODEC, TerraFirmaAidBaseCodecs.DEBUFF_BUILDERS_DIRECT_CODEC);
     }
 
     public static void setup(IEventBus modEventBus) {
         DEFERRED_DAMAGE_DISTRIBUTION_ALGORITHMS.register(modEventBus);
         DEFERRED_DAMAGE_DISTRIBUTION_TARGETS.register(modEventBus);
         DEFERRED_DEBUFF_BUILDERS.register(modEventBus);
-        modEventBus.addListener(FirstAidRegistries::createDataPackRegistries);
+        modEventBus.addListener(TerraFirmaAidRegistries::createDataPackRegistries);
     }
 }

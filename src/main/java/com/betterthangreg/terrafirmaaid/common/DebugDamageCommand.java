@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@ import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import com.betterthangreg.terrafirmaaid.FirstAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.api.enums.EnumPlayerPart;
 import com.betterthangreg.terrafirmaaid.common.damagesystem.distribution.DamageDistribution;

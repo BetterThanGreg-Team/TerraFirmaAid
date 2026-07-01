@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,8 +21,8 @@ package com.betterthangreg.terrafirmaaid.client.util;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import com.betterthangreg.terrafirmaaid.FirstAid;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractDamageablePart;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.common.util.LoggingMarkers;
@@ -33,7 +33,7 @@ import net.minecraft.util.Mth;
 import java.util.Random;
 
 public class PlayerModelRenderer {
-    private static final ResourceLocation HEALTH_RENDER_LOCATION = ResourceLocation.fromNamespaceAndPath(FirstAid.MODID, "textures/gui/simple_health.png");
+    private static final ResourceLocation HEALTH_RENDER_LOCATION = ResourceLocation.fromNamespaceAndPath(TerraFirmaAid.MODID, "textures/gui/simple_health.png");
     private static final Random RANDOM = new Random();
     private static final int SIZE = 32;
     private static int angle = 0;
@@ -49,12 +49,12 @@ public class PlayerModelRenderer {
         if (texture != null) {
             texture.setFilter(false, false);
         }
-        if (FirstAidConfig.CLIENT.enableEasterEggs.get() && (EventCalendar.isAFDay() || EventCalendar.isHalloween())) {
+        if (TerraFirmaAidConfig.CLIENT.enableEasterEggs.get() && (EventCalendar.isAFDay() || EventCalendar.isHalloween())) {
             float angle = PlayerModelRenderer.angle;
             if (cooldown == 0) {
                 angle += ((otherWay ? -partialTicks : partialTicks) * 2);
             }
-            if (FirstAidConfig.CLIENT.pos.get() == FirstAidConfig.Client.Position.BOTTOM_LEFT || FirstAidConfig.CLIENT.pos.get() == FirstAidConfig.Client.Position.TOP_LEFT)
+            if (TerraFirmaAidConfig.CLIENT.pos.get() == TerraFirmaAidConfig.Client.Position.BOTTOM_LEFT || TerraFirmaAidConfig.CLIENT.pos.get() == TerraFirmaAidConfig.Client.Position.TOP_LEFT)
                 stack.translate(angle * 1.5F, 0, 0);
             else
                 stack.translate(angle * 0.5F, 0, 0);
@@ -92,7 +92,7 @@ public class PlayerModelRenderer {
         }
         float healthPercentage = part.currentHealth / maxHealth;
         if (healthPercentage >= 1 || healthPercentage <= 0) {
-            FirstAid.LOGGER.error("Calculated invalid health for part {} with current health {} and max health {}. Got value {}", part.part, part.currentHealth, maxHealth, healthPercentage);
+            TerraFirmaAid.LOGGER.error("Calculated invalid health for part {} with current health {} and max health {}. Got value {}", part.part, part.currentHealth, maxHealth, healthPercentage);
         }
         if (!fourColors && healthPercentage > 0.75F) {
             return 1;

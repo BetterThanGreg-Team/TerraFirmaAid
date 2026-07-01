@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,8 +21,8 @@ package com.betterthangreg.terrafirmaaid.client;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.betterthangreg.terrafirmaaid.FirstAid;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractDamageablePart;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.api.enums.EnumPlayerPart;
@@ -60,7 +60,7 @@ public class HUDHandler implements ResourceManagerReloadListener {
     }
 
     private synchronized void buildTranslationTable() {
-        FirstAid.LOGGER.debug("Building GUI translation table");
+        TerraFirmaAid.LOGGER.debug("Building GUI translation table");
         TRANSLATION_MAP.clear();
         maxLength = 0;
         for (EnumPlayerPart part : EnumPlayerPart.VALUES) {
@@ -71,11 +71,11 @@ public class HUDHandler implements ResourceManagerReloadListener {
     }
 
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        if (FirstAidConfig.CLIENT.overlayMode.get() == FirstAidConfig.Client.OverlayMode.OFF) return;
+        if (TerraFirmaAidConfig.CLIENT.overlayMode.get() == TerraFirmaAidConfig.Client.OverlayMode.OFF) return;
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || !mc.player.isAlive()) return;
-        mc.getProfiler().push("FirstAidOverlay");
+        mc.getProfiler().push("TerraFirmaAidOverlay");
         doRenderOverlay(guiGraphics, mc, deltaTracker.getGameTimeDeltaTicks());
         mc.getProfiler().pop();
         mc.getProfiler().pop();
@@ -86,36 +86,36 @@ public class HUDHandler implements ResourceManagerReloadListener {
 
         AbstractPlayerDamageModel damageModel = CommonUtils.getDamageModel(mc.player);
         if (damageModel == null) return;
-        if (!FirstAid.isSynced) //Wait until we receive the remote model
+        if (!TerraFirmaAid.isSynced) //Wait until we receive the remote model
             return;
 
         if (TRANSLATION_MAP.isEmpty()) buildTranslationTable(); //just to make sure
 
-        int visibleTicks = FirstAidConfig.CLIENT.visibleDurationTicks.get();
+        int visibleTicks = TerraFirmaAidConfig.CLIENT.visibleDurationTicks.get();
         if (visibleTicks != -1) visibleTicks += FADE_TIME;
         boolean playerDead = damageModel.isDead(mc.player);
         for (AbstractDamageablePart damageablePart : damageModel) {
             if (HealthRenderUtils.healthChanged(damageablePart, playerDead)) { //Always call healthChanged, it affects the GUI as well
                 if (visibleTicks != -1)
                     ticker = Math.max(ticker, visibleTicks);
-                if (FirstAidConfig.CLIENT.flash.get()) {
+                if (TerraFirmaAidConfig.CLIENT.flash.get()) {
                     flashStateManager.setActive(Util.getMillis());
                 }
             }
         }
 
-        FirstAidConfig.Client.OverlayMode overlayMode = FirstAidConfig.CLIENT.overlayMode.get();
-        if (overlayMode == FirstAidConfig.Client.OverlayMode.OFF || (GuiHealthScreen.isOpen && !overlayMode.isPlayerModel()) || !com.betterthangreg.terrafirmaaid.client.ClientHooks.shouldDrawSurvivalElements())
+        TerraFirmaAidConfig.Client.OverlayMode overlayMode = TerraFirmaAidConfig.CLIENT.overlayMode.get();
+        if (overlayMode == TerraFirmaAidConfig.Client.OverlayMode.OFF || (GuiHealthScreen.isOpen && !overlayMode.isPlayerModel()) || !com.betterthangreg.terrafirmaaid.client.ClientHooks.shouldDrawSurvivalElements())
             return;
 
         if (visibleTicks != -1 && ticker < 0)
             return;
 
         RenderSystem.setShaderTexture(0, HealthRenderUtils.GUI_ICONS_LOCATION);
-        int xOffset = FirstAidConfig.CLIENT.xOffset.get();
-        int yOffset = FirstAidConfig.CLIENT.yOffset.get();
+        int xOffset = TerraFirmaAidConfig.CLIENT.xOffset.get();
+        int yOffset = TerraFirmaAidConfig.CLIENT.yOffset.get();
         boolean playerModel = overlayMode.isPlayerModel();
-        switch (FirstAidConfig.CLIENT.pos.get()) {
+        switch (TerraFirmaAidConfig.CLIENT.pos.get()) {
             case TOP_LEFT:
                 if (playerModel)
                     xOffset += 1;
@@ -133,16 +133,16 @@ public class HUDHandler implements ResourceManagerReloadListener {
                 yOffset = mc.getWindow().getGuiScaledHeight() - yOffset - (playerModel ? 62 : 80);
                 break;
             default:
-                throw new RuntimeException("Invalid config option for position: " + FirstAidConfig.CLIENT.pos.get());
+                throw new RuntimeException("Invalid config option for position: " + TerraFirmaAidConfig.CLIENT.pos.get());
         }
 
-        if (mc.screen instanceof ChatScreen && FirstAidConfig.CLIENT.pos.get() == FirstAidConfig.Client.Position.BOTTOM_LEFT)
+        if (mc.screen instanceof ChatScreen && TerraFirmaAidConfig.CLIENT.pos.get() == TerraFirmaAidConfig.Client.Position.BOTTOM_LEFT)
             return;
-        if (mc.getDebugOverlay().showDebugScreen() && FirstAidConfig.CLIENT.pos.get() == FirstAidConfig.Client.Position.TOP_LEFT)
+        if (mc.getDebugOverlay().showDebugScreen() && TerraFirmaAidConfig.CLIENT.pos.get() == TerraFirmaAidConfig.Client.Position.TOP_LEFT)
             return;
 
         boolean enableAlphaBlend = visibleTicks != -1 && ticker < FADE_TIME;
-        int alpha = enableAlphaBlend ? Mth.clamp((int)((FADE_TIME - ticker) * 255.0F / (float) FADE_TIME), FirstAidConfig.CLIENT.alpha.get(), 250) : FirstAidConfig.CLIENT.alpha.get();
+        int alpha = enableAlphaBlend ? Mth.clamp((int)((FADE_TIME - ticker) * 255.0F / (float) FADE_TIME), TerraFirmaAidConfig.CLIENT.alpha.get(), 250) : TerraFirmaAidConfig.CLIENT.alpha.get();
 
         PoseStack stack = guiGraphics.pose();
         stack.pushPose();
@@ -153,13 +153,13 @@ public class HUDHandler implements ResourceManagerReloadListener {
         }
         mc.getProfiler().popPush("render");
         if (overlayMode.isPlayerModel()) {
-            boolean fourColors = overlayMode == FirstAidConfig.Client.OverlayMode.PLAYER_MODEL_4_COLORS;
+            boolean fourColors = overlayMode == TerraFirmaAidConfig.Client.OverlayMode.PLAYER_MODEL_4_COLORS;
             PlayerModelRenderer.renderPlayerHealth(stack, damageModel, fourColors, guiGraphics, flashStateManager.update(Util.getMillis()), alpha, partialTicks);
         } else {
             int xTranslation = maxLength;
             for (AbstractDamageablePart part : damageModel) {
                 guiGraphics.drawString(mc.font, TRANSLATION_MAP.get(part.part), 0, 0, 0xFFFFFF - (alpha << 24 & -0xFFFFFF));
-                if (FirstAidConfig.CLIENT.overlayMode.get() == FirstAidConfig.Client.OverlayMode.NUMBERS) {
+                if (TerraFirmaAidConfig.CLIENT.overlayMode.get() == TerraFirmaAidConfig.Client.OverlayMode.NUMBERS) {
                     HealthRenderUtils.drawHealthString(guiGraphics, mc.font, part, xTranslation, 0, false);
                 } else {
                     HealthRenderUtils.drawHealth(guiGraphics, mc.font, part, xTranslation, 0, false);

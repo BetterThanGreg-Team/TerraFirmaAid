@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 package com.betterthangreg.terrafirmaaid.common.network;
 
-import com.betterthangreg.terrafirmaaid.FirstAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractDamageablePart;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.api.enums.EnumPlayerPart;
@@ -31,7 +31,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class MessageUpdatePart implements CustomPacketPayload {
-    public static final Type<MessageUpdatePart> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FirstAid.MODID, "update_part"));
+    public static final Type<MessageUpdatePart> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(TerraFirmaAid.MODID, "update_part"));
     
     public static final StreamCodec<FriendlyByteBuf, MessageUpdatePart> STREAM_CODEC = StreamCodec.of(
         (buf, msg) -> msg.encode(buf),

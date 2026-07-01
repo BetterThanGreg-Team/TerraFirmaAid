@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 package com.betterthangreg.terrafirmaaid.common.damagesystem.distribution;
 
-import com.betterthangreg.terrafirmaaid.FirstAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractDamageablePart;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.api.enums.EnumPlayerPart;
@@ -40,7 +40,7 @@ public class HealthDistribution {
 
     public static void manageHealth(float health, AbstractPlayerDamageModel damageModel, Player player, boolean sendChanges, boolean distribute) {
         if (sendChanges && player.level().isClientSide) {
-            FirstAid.LOGGER.warn("The sendChanges flag was set on the client, it can however only work on the server!" ,new RuntimeException("sendChanges flag set on the client, this is not supported!"));
+            TerraFirmaAid.LOGGER.warn("The sendChanges flag was set on the client, it can however only work on the server!" ,new RuntimeException("sendChanges flag set on the client, this is not supported!"));
             sendChanges = false;
         } else if (sendChanges && !(player instanceof ServerPlayer)) { //EntityOtherPlayerMP? log something?
             sendChanges = false;

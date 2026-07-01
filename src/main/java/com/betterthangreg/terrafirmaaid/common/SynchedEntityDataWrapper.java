@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,8 +18,8 @@
 
 package com.betterthangreg.terrafirmaaid.common;
 
-import com.betterthangreg.terrafirmaaid.FirstAid;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.common.damagesystem.distribution.DamageDistribution;
 import com.betterthangreg.terrafirmaaid.common.damagesystem.distribution.HealthDistribution;
@@ -100,19 +100,19 @@ public class SynchedEntityDataWrapper extends SynchedEntityData {
                         damageModel.forEach(damageablePart -> damageablePart.currentHealth = damageablePart.getMaxHealth());
                     }
                 } else if (beingRevived) {
-                    if (FirstAidConfig.GENERAL.debug.get())
+                    if (TerraFirmaAidConfig.GENERAL.debug.get())
                         CommonUtils.debugLogStacktrace("Completely ignoring setHealth!");
                     return;
-                } else if (FirstAidConfig.watchSetHealth && !Float.isInfinite(aFloat) && !Float.isNaN(aFloat) && aFloat > 0 && player instanceof ServerPlayer && ((ServerPlayer) player).connection != null) {
+                } else if (TerraFirmaAidConfig.watchSetHealth && !Float.isInfinite(aFloat) && !Float.isNaN(aFloat) && aFloat > 0 && player instanceof ServerPlayer && ((ServerPlayer) player).connection != null) {
                     //calculate diff
                     float orig = get(LivingEntity.DATA_HEALTH_ID);
                     if (orig > 0 && !Float.isNaN(orig) && !Float.isInfinite(orig)) {
-                        if (FirstAidConfig.SERVER.scaleMaxHealth.get())
+                        if (TerraFirmaAidConfig.SERVER.scaleMaxHealth.get())
                             orig = Math.min(orig, (float) this.player.getAttribute(Attributes.MAX_HEALTH).getValue());
                         float healed = aFloat - orig;
                         if (Math.abs(healed) > 0.001) {
                             if (healed < 0) {
-                                if (FirstAidConfig.GENERAL.debug.get()) {
+                                if (TerraFirmaAidConfig.GENERAL.debug.get()) {
                                     CommonUtils.debugLogStacktrace("DAMAGING: " + (-healed));
                                 }
                                 AbstractPlayerDamageModel damageModel = CommonUtils.getDamageModel(player);
@@ -120,7 +120,7 @@ public class SynchedEntityDataWrapper extends SynchedEntityData {
                                     DamageDistribution.handleDamageTaken(RandomDamageDistributionAlgorithm.getDefault(), damageModel, -healed, player, player.damageSources().magic(), true, true);
                                 }
                             } else {
-                                if (FirstAidConfig.GENERAL.debug.get()) {
+                                if (TerraFirmaAidConfig.GENERAL.debug.get()) {
                                     CommonUtils.debugLogStacktrace("HEALING: " + healed);
                                 }
                                 HealthDistribution.addRandomHealth(healed, player, true);
@@ -136,13 +136,13 @@ public class SynchedEntityDataWrapper extends SynchedEntityData {
 
 
     public void toggleTracking(boolean status) {
-        if (FirstAidConfig.GENERAL.debug.get())
+        if (TerraFirmaAidConfig.GENERAL.debug.get())
             CommonUtils.debugLogStacktrace("Tracking status change from " + track + " to " + status);
         track = status;
     }
 
     public void toggleBeingRevived(boolean status) {
-        if (FirstAidConfig.GENERAL.debug.get())
+        if (TerraFirmaAidConfig.GENERAL.debug.get())
             CommonUtils.debugLogStacktrace("Revived status change from " + beingRevived + " to " + status);
         beingRevived = status;
     }

@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 package com.betterthangreg.terrafirmaaid.common.network;
 
-import com.betterthangreg.terrafirmaaid.FirstAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
 import com.betterthangreg.terrafirmaaid.client.DebuffTimedSound;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
@@ -31,7 +31,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.Objects;
 
 public class MessagePlayHurtSound implements CustomPacketPayload {
-    public static final Type<MessagePlayHurtSound> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FirstAid.MODID, "play_hurt_sound"));
+    public static final Type<MessagePlayHurtSound> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(TerraFirmaAid.MODID, "play_hurt_sound"));
 
     public static final StreamCodec<FriendlyByteBuf, MessagePlayHurtSound> STREAM_CODEC = StreamCodec.of(
         (buf, msg) -> msg.encode(buf),

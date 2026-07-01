@@ -22,13 +22,24 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
+    maven {
+        name = "CurseForge"
+        url = "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 base {
     archivesName = mod_id
 }
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 minecraft {
     accessTransformers {
@@ -56,6 +67,19 @@ runs {
 
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
+
+    // TFC integration dependencies (required at runtime for health system)
+    // Uses CurseForge Maven: https://www.cursemaven.com
+    // TFC project: https://www.curseforge.com/minecraft/mc-mods/terrafirmacraft
+    // Patchouli project: https://www.curseforge.com/minecraft/mc-mods/patchouli
+    //
+    // File IDs can be found on CurseForge (hover over 'Download' button for the file number)
+    // To update: find the latest file for your MC version and replace the number
+    //
+    // TFC (TerraFirmaCraft) - required for TFC health system integration
+    implementation "curse.maven:terrafirmacraft-302973:7010707"
+    // Patchouli - required by TFC
+    implementation "curse.maven:patchouli-306770:6842247"
 }
 
 tasks.withType(ProcessResources).configureEach {

@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,10 +21,10 @@ package com.betterthangreg.terrafirmaaid.common.apiimpl;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.betterthangreg.terrafirmaaid.FirstAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
 import com.betterthangreg.terrafirmaaid.api.distribution.IDamageDistributionAlgorithm;
 import com.betterthangreg.terrafirmaaid.api.distribution.IDamageDistributionTarget;
-import com.betterthangreg.terrafirmaaid.common.registries.FirstAidBaseCodecs;
+import com.betterthangreg.terrafirmaaid.common.registries.TerraFirmaAidBaseCodecs;
 import com.betterthangreg.terrafirmaaid.common.util.LoggingMarkers;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -38,7 +38,7 @@ import java.util.Map;
 public class StaticDamageDistributionTarget implements IDamageDistributionTarget {
     public static final Codec<StaticDamageDistributionTarget> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
-                    FirstAidBaseCodecs.DAMAGE_DISTRIBUTION_ALGORITHMS_DIRECT_CODEC.fieldOf("algorithm").forGetter(o -> o.algorithm),
+                    TerraFirmaAidBaseCodecs.DAMAGE_DISTRIBUTION_ALGORITHMS_DIRECT_CODEC.fieldOf("algorithm").forGetter(o -> o.algorithm),
                     ResourceLocation.CODEC.listOf().fieldOf("damageTypes").forGetter(o -> o.damageTypes)
             ).apply(instance, StaticDamageDistributionTarget::new)
     );
@@ -67,7 +67,7 @@ public class StaticDamageDistributionTarget implements IDamageDistributionTarget
             }
         }
         if (!localDamageTypes.isEmpty()) {
-            FirstAid.LOGGER.warn(LoggingMarkers.REGISTRY, "Some damage types in {} failed to map: {}", StaticDamageDistributionTarget.class.getSimpleName(), localDamageTypes);
+            TerraFirmaAid.LOGGER.warn(LoggingMarkers.REGISTRY, "Some damage types in {} failed to map: {}", StaticDamageDistributionTarget.class.getSimpleName(), localDamageTypes);
         }
         return builder.build();
     }

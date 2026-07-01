@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,29 +25,29 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class FirstAidConfig {
+public class TerraFirmaAidConfig {
 
     static final ModConfigSpec serverSpec;
     static final ModConfigSpec generalSpec;
     static final ModConfigSpec clientSpec;
-    public static final FirstAidConfig.Server SERVER;
-    public static final FirstAidConfig.General GENERAL;
-    public static final FirstAidConfig.Client CLIENT;
+    public static final TerraFirmaAidConfig.Server SERVER;
+    public static final TerraFirmaAidConfig.General GENERAL;
+    public static final TerraFirmaAidConfig.Client CLIENT;
 
     static {
-        final Pair<FirstAidConfig.Server, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(FirstAidConfig.Server::new);
+        final Pair<TerraFirmaAidConfig.Server, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(TerraFirmaAidConfig.Server::new);
         serverSpec = specPair.getRight();
         SERVER = specPair.getLeft();
     }
 
     static {
-        final Pair<FirstAidConfig.General, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(FirstAidConfig.General::new);
+        final Pair<TerraFirmaAidConfig.General, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(TerraFirmaAidConfig.General::new);
         generalSpec = specPair.getRight();
         GENERAL = specPair.getLeft();
     }
 
     static {
-        final Pair<FirstAidConfig.Client, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(FirstAidConfig.Client::new);
+        final Pair<TerraFirmaAidConfig.Client, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(TerraFirmaAidConfig.Client::new);
         clientSpec = specPair.getRight();
         CLIENT = specPair.getLeft();
     }
@@ -64,6 +64,9 @@ public class FirstAidConfig {
 
         Server(ModConfigSpec.Builder builder) {
             builder.comment("Server to Client synced configuration settings").push("Damage System");
+
+            builder.comment("Health values for body parts. When TerraFirmaCraft is loaded, these values scale",
+                    "with TFC's nutrition-based max health system automatically.").push("body_part_health");
 
             maxHealthHead = healthEntry(builder, "Head", 4);
             maxHealthLeftArm = healthEntry(builder, "Left Arm", 4);
@@ -82,6 +85,7 @@ public class FirstAidConfig {
                     .translation("terrafirmaaid.config.causedeath.body")
                     .define("causeDeathBody", true);
 
+            builder.pop(); // body_part_health
             builder.pop().push("Locational Armor").push("Armor");
 
             headArmorMultiplier = multiplierEntry(builder, "Head", 6D);
@@ -114,11 +118,19 @@ public class FirstAidConfig {
             builder.pop().push("External Healing");
 
             allowNaturalRegeneration = builder
-                    .comment("Allow vanilla's natural regeneration. Requires \"allowOtherHealingItems\" to be true", "**WARNING** This sets the gamerule \"naturalRegeneration\" for all of your worlds internally, so it persists even if you remove the mod")
+                    .comment("Allow vanilla's natural regeneration. Requires \"allowOtherHealingItems\" to be true",
+                            "**WARNING** This sets the gamerule \"naturalRegeneration\" for all of your worlds internally, so it persists even if you remove the mod",
+                            "When TFC is loaded and \"overrideTFCNaturalRegen\" is false, TFC manages its own natural regen independently of this setting.")
                     .translation("terrafirmaaid.config.allownaturalregeneration")
                     .worldRestart()
                     .define("allowNaturalRegeneration", false);
 
+            overrideTFCNaturalRegen = builder
+                    .comment("If TerraFirmaCraft is loaded, override TFC's natural regeneration with TerraFirmaAid's regen system.",
+                            "When false (default), TFC manages its own natural regen. When true, TerraFirmaAid controls natural regen even when TFC is present.")
+                    .translation("terrafirmaaid.config.overridetfcnaturalregen")
+                    .worldRestart()
+                    .define("overrideTFCNaturalRegen", false);
             allowOtherHealingItems = builder
                     .comment("If false, healing potions and other healing items will have no effect")
                     .translation("terrafirmaaid.config.allowotherhealingitems")
@@ -151,7 +163,7 @@ public class FirstAidConfig {
 
             capMaxHealth = builder
                     .comment("If true, max health will be capped at 6 hearts and absorption at 2 hearts per limb. If false, the health cap will be much higher (64 hearts normal and 16 absorption)")
-                    .translation("terrafirmaaid.config.scalemaxhealth")
+                    .translation("terrafirmaaid.config.capmaxhealth")
                     .define("capMaxHealth", true);
 
             vanillaHealthCalculation = builder
@@ -185,7 +197,7 @@ public class FirstAidConfig {
                             "This list specifies the resource location of the enchantment. Must be fully specified and cannot use wildcard. Example: minecraft:feather_falling. First entry here will be matched to first multiplier, second entry to second multiplier and so on")
                     .defineList("resourceLocations", Collections.singletonList("minecraft:feather_falling"), o -> {
                         if (o == null || o.toString().isEmpty()) {
-                            FirstAid.LOGGER.warn("Ignored empty or invalid string for resourceLocations");
+                            TerraFirmaAid.LOGGER.warn("Ignored empty or invalid string for resourceLocations");
                             return false;
                         } else {
                             return true;
@@ -199,7 +211,7 @@ public class FirstAidConfig {
                             int val = Integer.parseInt(o.toString());
                             return val >= 1 && val <= 4;
                         } catch (NumberFormatException ignored) {}
-                        FirstAid.LOGGER.warn("Invalid entry " + o.toString() + " for overrideMultiplier found!");
+                        TerraFirmaAid.LOGGER.warn("Invalid entry " + o.toString() + " for overrideMultiplier found!");
                         return false;
                     });
 
@@ -241,6 +253,7 @@ public class FirstAidConfig {
         public final IEEntry plaster;
 
         public final ModConfigSpec.BooleanValue allowNaturalRegeneration;
+        public final ModConfigSpec.BooleanValue overrideTFCNaturalRegen;
         public final ModConfigSpec.BooleanValue allowOtherHealingItems;
         public final ModConfigSpec.DoubleValue sleepHealPercentage;
         public final ModConfigSpec.DoubleValue otherRegenMultiplier;
@@ -260,7 +273,10 @@ public class FirstAidConfig {
 
         private static ModConfigSpec.IntValue healthEntry(ModConfigSpec.Builder builder, String name, int defaultVal) {
             String noSpaceName = name.replace(' ', '_');
-            return builder.comment("Max health of the " + name).translation("terrafirmaaid.config.maxhealth." + noSpaceName.toLowerCase(Locale.ENGLISH)).defineInRange("maxHealth" + noSpaceName, defaultVal, 2, 12);
+            return builder.comment("Max health of the " + name + ". 2 = 1 heart (or 1 TFC health point when TFC is loaded)",
+                            "When TFC is present, limb health scales with TFC's nutrition-based HP system automatically.")
+                    .translation("terrafirmaaid.config.maxhealth." + noSpaceName.toLowerCase(Locale.ENGLISH))
+                    .defineInRange("maxHealth" + noSpaceName, defaultVal, 2, 12);
         }
 
         private static ModConfigSpec.DoubleValue multiplierEntry(ModConfigSpec.Builder builder, String name, double defaultVal) {
@@ -345,6 +361,7 @@ public class FirstAidConfig {
         public final ModConfigSpec.BooleanValue enableEasterEggs;
         public final ModConfigSpec.IntValue visibleDurationTicks;
         public final ModConfigSpec.BooleanValue flash;
+        public final ModConfigSpec.BooleanValue useTFCHealthGui;
 
         public Client(ModConfigSpec.Builder builder) {
             builder.comment("Client only configuration settings").push("Overlay");
@@ -394,7 +411,14 @@ public class FirstAidConfig {
                     .translation("terrafirmaaid.config.flash")
                     .comment("If set to true, the overlay will flash for a short moment if the health changed. Only affects PLAYER_MODEL overlay")
                     .define("flash", true);
-            builder.pop();
+            builder.pop(); // Overlay
+            useTFCHealthGui = builder
+                    .comment("When TerraFirmaCraft is loaded, use TFC-style horizontal health bars instead of hearts in the TerraFirmaAid overlay and GUI.",
+                            "Only applies when TFC is present.")
+                    .translation("terrafirmaaid.config.usetfchealthgui")
+                    .define("useTFCHealthGui", true);
+
+            builder.push("Misc");
 
 
             builder.push("Misc");

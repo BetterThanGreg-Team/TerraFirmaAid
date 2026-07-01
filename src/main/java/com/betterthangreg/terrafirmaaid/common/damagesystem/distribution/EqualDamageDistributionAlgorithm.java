@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@ package com.betterthangreg.terrafirmaaid.common.damagesystem.distribution;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.betterthangreg.terrafirmaaid.FirstAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractDamageablePart;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.api.distribution.IDamageDistributionAlgorithm;
@@ -73,7 +73,7 @@ public class EqualDamageDistributionAlgorithm implements IDamageDistributionAlgo
         try {
             damage = (float) GET_DAMAGE_AFTER_MAGIC_ABSORB_METHOD.invoke(player, source, damage);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            FirstAid.LOGGER.error(LoggingMarkers.DAMAGE_DISTRIBUTION, "Could not invoke getDamageAfterMagicAbsorb!", e);
+            TerraFirmaAid.LOGGER.error(LoggingMarkers.DAMAGE_DISTRIBUTION, "Could not invoke getDamageAfterMagicAbsorb!", e);
         }
         if (damage <= 0F) return 0F; // If the damage got reduced to zero, respect that and continue.
         float reduction = originalDamage - damage;
@@ -108,7 +108,7 @@ public class EqualDamageDistributionAlgorithm implements IDamageDistributionAlgo
 
             //For safety
             if (iterationCounter >= 50) {
-                FirstAid.LOGGER.warn(LoggingMarkers.DAMAGE_DISTRIBUTION, "Not done distribution equally after 50 rounds, diff {}. Dropping!", Math.abs(prevDamageLeft - damageLeft));
+                TerraFirmaAid.LOGGER.warn(LoggingMarkers.DAMAGE_DISTRIBUTION, "Not done distribution equally after 50 rounds, diff {}. Dropping!", Math.abs(prevDamageLeft - damageLeft));
                 break;
             }
             iterationCounter++;

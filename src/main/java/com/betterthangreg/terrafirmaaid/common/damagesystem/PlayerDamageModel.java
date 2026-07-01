@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,8 +18,8 @@
 
 package com.betterthangreg.terrafirmaaid.common.damagesystem;
 
-import com.betterthangreg.terrafirmaaid.FirstAid;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractDamageablePart;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.api.debuff.IDebuff;
@@ -31,7 +31,7 @@ import com.betterthangreg.terrafirmaaid.common.RegistryObjects;
 import com.betterthangreg.terrafirmaaid.common.SynchedEntityDataWrapper;
 import com.betterthangreg.terrafirmaaid.common.damagesystem.debuff.SharedDebuff;
 import com.betterthangreg.terrafirmaaid.common.network.MessageSyncDamageModel;
-import com.betterthangreg.terrafirmaaid.common.registries.FirstAidRegistryLookups;
+import com.betterthangreg.terrafirmaaid.common.registries.TerraFirmaAidRegistryLookups;
 import com.betterthangreg.terrafirmaaid.common.registries.LookupReloadListener;
 import com.betterthangreg.terrafirmaaid.common.util.CommonUtils;
 import net.minecraft.client.Minecraft;
@@ -60,16 +60,16 @@ public class PlayerDamageModel extends AbstractPlayerDamageModel implements Look
     private int resyncTimer = -1;
 
     public PlayerDamageModel() {
-        super(new DamageablePart(FirstAidConfig.SERVER.maxHealthHead.get(),      FirstAidConfig.SERVER.causeDeathHead.get(),  EnumPlayerPart.HEAD),
-              new DamageablePart(FirstAidConfig.SERVER.maxHealthLeftArm.get(),   false,                         EnumPlayerPart.LEFT_ARM),
-              new DamageablePart(FirstAidConfig.SERVER.maxHealthLeftLeg.get(),   false,                         EnumPlayerPart.LEFT_LEG),
-              new DamageablePart(FirstAidConfig.SERVER.maxHealthLeftFoot.get(),  false,                         EnumPlayerPart.LEFT_FOOT),
-              new DamageablePart(FirstAidConfig.SERVER.maxHealthBody.get(),      FirstAidConfig.SERVER.causeDeathBody.get(),  EnumPlayerPart.BODY),
-              new DamageablePart(FirstAidConfig.SERVER.maxHealthRightArm.get(),  false,                         EnumPlayerPart.RIGHT_ARM),
-              new DamageablePart(FirstAidConfig.SERVER.maxHealthRightLeg.get(),  false,                         EnumPlayerPart.RIGHT_LEG),
-              new DamageablePart(FirstAidConfig.SERVER.maxHealthRightFoot.get(), false,                         EnumPlayerPart.RIGHT_FOOT));
-        noCritical = !FirstAidConfig.SERVER.causeDeathBody.get() && !FirstAidConfig.SERVER.causeDeathHead.get();
-        FirstAidRegistryLookups.registerReloadListener(this);
+        super(new DamageablePart(TerraFirmaAidConfig.SERVER.maxHealthHead.get(),      TerraFirmaAidConfig.SERVER.causeDeathHead.get(),  EnumPlayerPart.HEAD),
+              new DamageablePart(TerraFirmaAidConfig.SERVER.maxHealthLeftArm.get(),   false,                         EnumPlayerPart.LEFT_ARM),
+              new DamageablePart(TerraFirmaAidConfig.SERVER.maxHealthLeftLeg.get(),   false,                         EnumPlayerPart.LEFT_LEG),
+              new DamageablePart(TerraFirmaAidConfig.SERVER.maxHealthLeftFoot.get(),  false,                         EnumPlayerPart.LEFT_FOOT),
+              new DamageablePart(TerraFirmaAidConfig.SERVER.maxHealthBody.get(),      TerraFirmaAidConfig.SERVER.causeDeathBody.get(),  EnumPlayerPart.BODY),
+              new DamageablePart(TerraFirmaAidConfig.SERVER.maxHealthRightArm.get(),  false,                         EnumPlayerPart.RIGHT_ARM),
+              new DamageablePart(TerraFirmaAidConfig.SERVER.maxHealthRightLeg.get(),  false,                         EnumPlayerPart.RIGHT_LEG),
+              new DamageablePart(TerraFirmaAidConfig.SERVER.maxHealthRightFoot.get(), false,                         EnumPlayerPart.RIGHT_FOOT));
+        noCritical = !TerraFirmaAidConfig.SERVER.causeDeathBody.get() && !TerraFirmaAidConfig.SERVER.causeDeathHead.get();
+        TerraFirmaAidRegistryLookups.registerReloadListener(this);
     }
 
     @Override
@@ -109,10 +109,10 @@ public class PlayerDamageModel extends AbstractPlayerDamageModel implements Look
 
     @Override
     public void onLookupsReloaded() {
-        FirstAid.LOGGER.debug("Reloaded lookups");
+        TerraFirmaAid.LOGGER.debug("Reloaded lookups");
         sharedDebuffs.clear();
         for (EnumDebuffSlot debuffSlot : EnumDebuffSlot.values()) {
-            IDebuff[] debuffs = FirstAidRegistryLookups.getDebuffs(debuffSlot);
+            IDebuff[] debuffs = TerraFirmaAidRegistryLookups.getDebuffs(debuffSlot);
             for (EnumPlayerPart playerPart : debuffSlot.playerParts) {
                 getFromEnum(playerPart).loadDebuffInfo(debuffs);
             }
@@ -128,7 +128,7 @@ public class PlayerDamageModel extends AbstractPlayerDamageModel implements Look
     public void tick(Level world, Player player) {
         if (isDead(player))
             return;
-        world.getProfiler().push("FirstAidPlayerModel");
+        world.getProfiler().push("TerraFirmaAidPlayerModel");
         if (sleepBlockTicks > 0)
             sleepBlockTicks--;
         else if (sleepBlockTicks < 0)
@@ -136,11 +136,11 @@ public class PlayerDamageModel extends AbstractPlayerDamageModel implements Look
 
         float newCurrentHealth = calculateNewCurrentHealth(player);
         if (Float.isNaN(newCurrentHealth)) {
-            FirstAid.LOGGER.warn("New current health is not a number, setting it to 0!");
+            TerraFirmaAid.LOGGER.warn("New current health is not a number, setting it to 0!");
             newCurrentHealth = 0F;
         }
         if (newCurrentHealth <= 0F) {
-            FirstAid.LOGGER.error("Got {} health left, but isn't marked as dead!", newCurrentHealth);
+            TerraFirmaAid.LOGGER.error("Got {} health left, but isn't marked as dead!", newCurrentHealth);
             world.getProfiler().pop();
             return;
         }
@@ -153,7 +153,7 @@ public class PlayerDamageModel extends AbstractPlayerDamageModel implements Look
         }
 
         if (Float.isInfinite(newCurrentHealth)) {
-            FirstAid.LOGGER.error("Error calculating current health: Value was infinite"); //Shouldn't happen anymore, but let's be safe
+            TerraFirmaAid.LOGGER.error("Error calculating current health: Value was infinite"); //Shouldn't happen anymore, but let's be safe
         } else {
             if (newCurrentHealth != prevHealthCurrent)
                 ((SynchedEntityDataWrapper) player.entityData).set_impl(Player.DATA_HEALTH_ID, newCurrentHealth);
@@ -230,8 +230,8 @@ public class PlayerDamageModel extends AbstractPlayerDamageModel implements Look
 
     private float calculateNewCurrentHealth(Player player) {
         float currentHealth = 0;
-        FirstAidConfig.Server.VanillaHealthCalculationMode mode = FirstAidConfig.SERVER.vanillaHealthCalculation.get();
-        if (noCritical) mode = FirstAidConfig.Server.VanillaHealthCalculationMode.AVERAGE_ALL;
+        TerraFirmaAidConfig.Server.VanillaHealthCalculationMode mode = TerraFirmaAidConfig.SERVER.vanillaHealthCalculation.get();
+        if (noCritical) mode = TerraFirmaAidConfig.Server.VanillaHealthCalculationMode.AVERAGE_ALL;
         switch (mode) {
             case AVERAGE_CRITICAL:
                 int maxHealth = 0;
@@ -336,7 +336,7 @@ public class PlayerDamageModel extends AbstractPlayerDamageModel implements Look
         int max = 0;
         for (AbstractDamageablePart part : this) {
             int newMax;
-            if (FirstAidConfig.CLIENT.overlayMode.get() == FirstAidConfig.Client.OverlayMode.NUMBERS)
+            if (TerraFirmaAidConfig.CLIENT.overlayMode.get() == TerraFirmaAidConfig.Client.OverlayMode.NUMBERS)
                 newMax = Minecraft.getInstance().font.width(HealthRenderUtils.TEXT_FORMAT.format(part.currentHealth) + "/" + part.getMaxHealth()) + 1;
             else
                 newMax = (int) (((((int) (part.getMaxHealth() + part.getAbsorption() + 0.9999F)) + 1) / 2F) * 9F);
@@ -349,7 +349,7 @@ public class PlayerDamageModel extends AbstractPlayerDamageModel implements Look
     public void sleepHeal(Player player) {
         if (sleepBlockTicks > 0)
             return;
-        CommonUtils.healPlayerByPercentage(FirstAidConfig.SERVER.sleepHealPercentage.get(), this, player);
+        CommonUtils.healPlayerByPercentage(TerraFirmaAidConfig.SERVER.sleepHealPercentage.get(), this, player);
         sleepBlockTicks = 20;
     }
 
@@ -364,7 +364,7 @@ public class PlayerDamageModel extends AbstractPlayerDamageModel implements Look
 
     @Override
     public void revivePlayer(Player player) {
-        if (FirstAidConfig.GENERAL.debug.get()) {
+        if (TerraFirmaAidConfig.GENERAL.debug.get()) {
             CommonUtils.debugLogStacktrace("Reviving player");
         }
         player.revive();
@@ -380,12 +380,12 @@ public class PlayerDamageModel extends AbstractPlayerDamageModel implements Look
 
     @Override
     public void runScaleLogic(Player player) {
-        if (FirstAidConfig.SERVER.scaleMaxHealth.get()) { //Attempt to calculate the max health of the body parts based on the maxHealth attribute
+        if (TerraFirmaAidConfig.SERVER.scaleMaxHealth.get()) { //Attempt to calculate the max health of the body parts based on the maxHealth attribute
             player.level().getProfiler().push("healthscaling");
             float globalFactor = player.getMaxHealth() / 20F;
             if (prevScaleFactor != globalFactor) {
-                if (FirstAidConfig.GENERAL.debug.get()) {
-                    FirstAid.LOGGER.info("Starting health scaling factor {} -> {} (max health {})", prevScaleFactor, globalFactor, player.getMaxHealth());
+                if (TerraFirmaAidConfig.GENERAL.debug.get()) {
+                    TerraFirmaAid.LOGGER.info("Starting health scaling factor {} -> {} (max health {})", prevScaleFactor, globalFactor, player.getMaxHealth());
                 }
                 player.level().getProfiler().push("distribution");
                 int reduced = 0;
@@ -413,15 +413,15 @@ public class PlayerDamageModel extends AbstractPlayerDamageModel implements Look
                         }
                     }
                     newMaxHealth += result;
-                    if (FirstAidConfig.GENERAL.debug.get()) {
-                        FirstAid.LOGGER.info("Part {} max health: {} initial; {} old; {} new", part.part.name(), part.initialMaxHealth, part.getMaxHealth(), result);
+                    if (TerraFirmaAidConfig.GENERAL.debug.get()) {
+                        TerraFirmaAid.LOGGER.info("Part {} max health: {} initial; {} old; {} new", part.part.name(), part.initialMaxHealth, part.getMaxHealth(), result);
                     }
                     part.setMaxHealth(result);
                 }
                 player.level().getProfiler().popPush("correcting");
                 if (Math.abs(expectedNewMaxHealth - newMaxHealth) >= 2F) {
-                    if (FirstAidConfig.GENERAL.debug.get()) {
-                        FirstAid.LOGGER.info("Entering second stage - diff {}", Math.abs(expectedNewMaxHealth - newMaxHealth));
+                    if (TerraFirmaAidConfig.GENERAL.debug.get()) {
+                        TerraFirmaAid.LOGGER.info("Entering second stage - diff {}", Math.abs(expectedNewMaxHealth - newMaxHealth));
                     }
                     List<AbstractDamageablePart> prioList = new ArrayList<>();
                     for (AbstractDamageablePart part : this) {
@@ -430,8 +430,8 @@ public class PlayerDamageModel extends AbstractPlayerDamageModel implements Look
                     prioList.sort(Comparator.comparingInt(AbstractDamageablePart::getMaxHealth));
                     for (AbstractDamageablePart part : prioList) {
                         int maxHealth = part.getMaxHealth();
-                        if (FirstAidConfig.GENERAL.debug.get()) {
-                            FirstAid.LOGGER.info("Part {}: Second stage with total diff {}", part.part.name(), Math.abs(expectedNewMaxHealth - newMaxHealth));
+                        if (TerraFirmaAidConfig.GENERAL.debug.get()) {
+                            TerraFirmaAid.LOGGER.info("Part {}: Second stage with total diff {}", part.part.name(), Math.abs(expectedNewMaxHealth - newMaxHealth));
                         }
                         if (expectedNewMaxHealth > newMaxHealth) {
                             part.setMaxHealth(maxHealth + 2);
@@ -457,7 +457,7 @@ public class PlayerDamageModel extends AbstractPlayerDamageModel implements Look
         if (this.resyncTimer == -1) {
             this.resyncTimer = 3;
         } else {
-            FirstAid.LOGGER.warn("resync already scheduled!");
+            TerraFirmaAid.LOGGER.warn("resync already scheduled!");
         }
     }
 

@@ -1,5 +1,5 @@
 {
-  "itemGroup.terrafirmaaid": "First Aid",
+  "itemGroup.terrafirmaaid": "TerraFirmaAid",
   "item.terrafirmaaid.bandage": "Bandage",
   "item.terrafirmaaid.plaster": "Pansement",
   "item.terrafirmaaid.morphine": "Morphine",
@@ -17,15 +17,15 @@
   "terrafirmaaid.gui.active_item": "Actuellement activé",
   "terrafirmaaid.gui.no_sleep_heal": "Dormir ne rétablit pas la santé",
   "terrafirmaaid.gui.sleep_heal_amount": "Dormir vous régénére de %s%% votre santé maximal.",
-  "terrafirmaaid.gui.tutorial": "Tutoriel FirstAid",
-  "terrafirmaaid.gui.healthscreen": "Écran de Santé FirstAid",
+  "terrafirmaaid.gui.tutorial": "Tutoriel TerraFirmaAid",
+  "terrafirmaaid.gui.healthscreen": "Écran de Santé TerraFirmaAid",
 
   "terrafirmaaid.tooltip.morphine": "Supprime les effets negatifs de santé pendant %s",
   "terrafirmaaid.tooltip.healer": "Régénére %s coeurs au total, nécessite %s par demi-coeur",
 
   "terrafirmaaid.tutorial.notice": "TUTORIEL - AUCUNE VALEUR RÉELLE",
   "terrafirmaaid.tutorial.hint": "Appuyez sur %s pour voir le tutoriel sur la santé",
-  "terrafirmaaid.tutorial.welcome": "Bienvenue dans le mod FirstAid ! Ce tutoriel vous guidera à travers ce mod et vous expliquera les différents mécanismes.",
+  "terrafirmaaid.tutorial.welcome": "Bienvenue dans le mod TerraFirmaAid ! Ce tutoriel vous guidera à travers ce mod et vous expliquera les différents mécanismes.",
   "terrafirmaaid.tutorial.line1": "Comme vous l'avez peut-être déjà remarqué, la barre de santé à la vanille a disparu. Elle a été remplacée par ce système.",
   "terrafirmaaid.tutorial.line2": "Chaque partie de votre corps a sa propre santé. Donc si vous tombez d'un endroit élevé...",
   "terrafirmaaid.tutorial.line3": "L'un de vos pieds sera endommagé ! Cela peut entraîner l'application de certains débuffs, comme la lenteur pour les pieds endommagés, la fatigue de minage pour les bras endommagés, etc.",

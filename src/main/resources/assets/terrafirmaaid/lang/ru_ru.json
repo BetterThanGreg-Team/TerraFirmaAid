@@ -1,5 +1,5 @@
 {
-  "itemGroup.terrafirmaaid": "FirstAid",
+  "itemGroup.terrafirmaaid": "TerraFirmaAid",
   "item.terrafirmaaid.bandage": "Бинт",
   "item.terrafirmaaid.plaster": "Пластырь",
   "item.terrafirmaaid.morphine": "Морфин",
@@ -9,7 +9,7 @@
 
   "terrafirmaaid.tutorial.notice": "ОБУЧЕНИЕ - НЕ ПРАВДИВО!",
   "terrafirmaaid.tutorial.hint": "Нажмите %s для обучения",
-  "terrafirmaaid.tutorial.welcome": "Добро пожаловать в мод FirstAid! Этот урок проведет вас через этот мод и объяснит различные механизмы.",
+  "terrafirmaaid.tutorial.welcome": "Добро пожаловать в мод TerraFirmaAid! Этот урок проведет вас через этот мод и объяснит различные механизмы.",
   "terrafirmaaid.tutorial.line1": "Как вы уже могли заметить, стандартная полоса здоровья исчезла. Это было заменено этой системой.",
   "terrafirmaaid.tutorial.line2": "Каждая часть вашего тела имеет свое здоровье. Так что если вы упали с высоты...",
   "terrafirmaaid.tutorial.line3": "Одна из ваших ног будет повреждена! Это может привести к появлению некоторых эффектов, таких как медлительность для поврежденных ног, усталость от горных работ для поврежденных рук и т.д..",

@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 package com.betterthangreg.terrafirmaaid.common.network;
 
-import com.betterthangreg.terrafirmaaid.FirstAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.api.enums.EnumPlayerPart;
 import com.betterthangreg.terrafirmaaid.common.util.CommonUtils;
@@ -34,7 +34,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.Optional;
 
 public class MessageAddHealth implements CustomPacketPayload {
-    public static final Type<MessageAddHealth> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FirstAid.MODID, "add_health"));
+    public static final Type<MessageAddHealth> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(TerraFirmaAid.MODID, "add_health"));
 
     public static final StreamCodec<FriendlyByteBuf, MessageAddHealth> STREAM_CODEC = StreamCodec.of(
         (buf, msg) -> msg.encode(buf),
@@ -76,7 +76,7 @@ public class MessageAddHealth implements CustomPacketPayload {
                     damageModel.getFromEnum(part).heal(f, playerSP, false);
                 }
             } else {
-                FirstAid.LOGGER.debug(LoggingMarkers.NETWORK, "Failed to find damage model, what?");
+                TerraFirmaAid.LOGGER.debug(LoggingMarkers.NETWORK, "Failed to find damage model, what?");
             }
         });
     }

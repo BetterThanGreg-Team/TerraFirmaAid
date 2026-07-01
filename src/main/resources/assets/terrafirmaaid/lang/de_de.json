@@ -1,5 +1,5 @@
 {
-  "itemGroup.terrafirmaaid": "First Aid",
+  "itemGroup.terrafirmaaid": "TerraFirmaAid",
   "item.terrafirmaaid.bandage": "Bandage",
   "item.terrafirmaaid.plaster": "Pflaster",
   "item.terrafirmaaid.morphine": "Morphium",
@@ -17,15 +17,15 @@
   "terrafirmaaid.gui.active_item": "Gerade aktiv",
   "terrafirmaaid.gui.no_sleep_heal": "Schlafen stellt kein Leben wieder her",
   "terrafirmaaid.gui.sleep_heal_amount": "Schlafen stellt %s%% des maximalen Lebens wieder her",
-  "terrafirmaaid.gui.tutorial": "FirstAid Tutorial",
-  "terrafirmaaid.gui.healthscreen": "FirstAid Gesundheitsbildschirm",
+  "terrafirmaaid.gui.tutorial": "TerraFirmaAid Tutorial",
+  "terrafirmaaid.gui.healthscreen": "TerraFirmaAid Gesundheitsbildschirm",
 
   "terrafirmaaid.tooltip.morphine": "Undrückt negative Effekte von fehlendem Leben für %s",
   "terrafirmaaid.tooltip.healer": "Stellt %s Herzen wieder her, braucht %s pro halbes Herz",
 
   "terrafirmaaid.tutorial.notice": "TUTORIAL - NICHT TATSÄCHLICHE WERTE",
   "terrafirmaaid.tutorial.hint": "Drücke %s für das Tutorial",
-  "terrafirmaaid.tutorial.welcome": "Willkommen zum FirstAid Mod! Dieses Tutorial wird dich durch den Mod und seine Mechaniken führen.",
+  "terrafirmaaid.tutorial.welcome": "Willkommen zum TerraFirmaAid Mod! Dieses Tutorial wird dich durch den Mod und seine Mechaniken führen.",
   "terrafirmaaid.tutorial.line1": "Wie du vielleicht schon gemerkt hast, ist die normale Lebensleiste weg. Sie wurde duch dieses System ersetzt.",
   "terrafirmaaid.tutorial.line2": "Jeder Teil deines Körpers hat seine eigene Lebensleiste. Wenn du zum Beispiel von einem hohen Platz fällst...",
   "terrafirmaaid.tutorial.line3": "Wird einer deiner Füße verletzt! Dies kann negative Effekte herbeiführen, wie Langsamkeit für wunde Füße, langames Abbauen für wunde Arme und so weiter.",

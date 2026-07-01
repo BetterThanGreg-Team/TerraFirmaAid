@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,12 +18,12 @@
 
 package com.betterthangreg.terrafirmaaid.common;
 
-import com.betterthangreg.terrafirmaaid.FirstAid;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import com.betterthangreg.terrafirmaaid.api.healing.ItemHealing;
 import com.betterthangreg.terrafirmaaid.common.damagesystem.PartHealer;
 import com.betterthangreg.terrafirmaaid.common.items.ItemMorphine;
-import com.betterthangreg.terrafirmaaid.common.potion.FirstAidPotion;
+import com.betterthangreg.terrafirmaaid.common.potion.TerraFirmaAidPotion;
 import com.betterthangreg.terrafirmaaid.common.potion.PotionPoisonPatched;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -42,12 +42,12 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import com.betterthangreg.terrafirmaaid.common.damagesystem.PlayerDamageModel;
 
 public class RegistryObjects {
-    private static final DeferredRegister<Item> ITEM_REGISTER = DeferredRegister.create(Registries.ITEM, FirstAid.MODID);
-    private static final DeferredRegister<SoundEvent> SOUND_EVENT_REGISTER = DeferredRegister.create(Registries.SOUND_EVENT, FirstAid.MODID);
-    private static final DeferredRegister<MobEffect> MOB_EFFECT_REGISTER = DeferredRegister.create(Registries.MOB_EFFECT, FirstAid.MODID);
+    private static final DeferredRegister<Item> ITEM_REGISTER = DeferredRegister.create(Registries.ITEM, TerraFirmaAid.MODID);
+    private static final DeferredRegister<SoundEvent> SOUND_EVENT_REGISTER = DeferredRegister.create(Registries.SOUND_EVENT, TerraFirmaAid.MODID);
+    private static final DeferredRegister<MobEffect> MOB_EFFECT_REGISTER = DeferredRegister.create(Registries.MOB_EFFECT, TerraFirmaAid.MODID);
     private static final DeferredRegister<MobEffect> MOB_EFFECT_OVERRIDE_REGISTER = DeferredRegister.create(Registries.MOB_EFFECT, "minecraft");
-    private static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TAB_REGISTER = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, FirstAid.MODID);
-    private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, FirstAid.MODID);
+    private static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TAB_REGISTER = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, TerraFirmaAid.MODID);
+    private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, TerraFirmaAid.MODID);
 
     public static final DeferredHolder<Item, Item> BANDAGE;
     public static final DeferredHolder<Item, Item> PLASTER;
@@ -62,7 +62,7 @@ public class RegistryObjects {
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<PlayerDamageModel>> DAMAGE_MODEL;
 
     static {
-        FirstAidConfig.Server server = FirstAidConfig.SERVER;
+        TerraFirmaAidConfig.Server server = TerraFirmaAidConfig.SERVER;
 
         // ITEMS
         BANDAGE = ITEM_REGISTER.register("bandage", () -> ItemHealing.create(new Item.Properties().stacksTo(16), stack -> new PartHealer(() -> server.bandage.secondsPerHeal.get() * 20, server.bandage.totalHeals::get, stack), stack -> server.bandage.applyTime.get()));
@@ -70,11 +70,11 @@ public class RegistryObjects {
         MORPHINE = ITEM_REGISTER.register("morphine", ItemMorphine::new);
 
         // SOUNDS
-        ResourceLocation soundLocation = ResourceLocation.fromNamespaceAndPath(FirstAid.MODID, "debuff.heartbeat");
+        ResourceLocation soundLocation = ResourceLocation.fromNamespaceAndPath(TerraFirmaAid.MODID, "debuff.heartbeat");
         HEARTBEAT = SOUND_EVENT_REGISTER.register(soundLocation.getPath(), () -> SoundEvent.createVariableRangeEvent(soundLocation));
 
         // MOB EFFECTS
-        MORPHINE_EFFECT = MOB_EFFECT_REGISTER.register("morphine", () -> new FirstAidPotion(MobEffectCategory.BENEFICIAL, 0xDDD));
+        MORPHINE_EFFECT = MOB_EFFECT_REGISTER.register("morphine", () -> new TerraFirmaAidPotion(MobEffectCategory.BENEFICIAL, 0xDDD));
         POISON_PATCHED = MOB_EFFECT_OVERRIDE_REGISTER.register("poison", () -> new PotionPoisonPatched(MobEffectCategory.HARMFUL, 5149489));
 
         CREATIVE_TAB = CREATIVE_MODE_TAB_REGISTER.register("main_tab", () -> CreativeModeTab.builder()

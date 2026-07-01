@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 package com.betterthangreg.terrafirmaaid.common.registries;
 
 import com.google.common.collect.ImmutableMap;
-import com.betterthangreg.terrafirmaaid.FirstAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
 import com.betterthangreg.terrafirmaaid.api.debuff.IDebuff;
 import com.betterthangreg.terrafirmaaid.api.debuff.IDebuffBuilder;
 import com.betterthangreg.terrafirmaaid.api.distribution.IDamageDistributionAlgorithm;
@@ -35,7 +35,7 @@ import net.minecraft.world.damagesource.DamageType;
 
 import java.util.*;
 
-public class FirstAidRegistryLookups {
+public class TerraFirmaAidRegistryLookups {
     private static final Object LOCK = new Object();
     private static final Collection<LookupReloadListener> LISTENERS = Collections.newSetFromMap(new WeakHashMap<>());
     private static Map<DamageType, IDamageDistributionAlgorithm> DAMAGE_DISTRIBUTIONS;
@@ -58,7 +58,7 @@ public class FirstAidRegistryLookups {
     }
 
     public static void init(RegistryAccess registryAccess, boolean isRemote) {
-        if (isRemote && FirstAid.isSynced) {
+        if (isRemote && TerraFirmaAid.isSynced) {
             throw new IllegalStateException("Synced before registry lookups have been loaded!");
         }
 
@@ -69,11 +69,11 @@ public class FirstAidRegistryLookups {
                 listener.onLookupsReloaded();
             }
         }
-        FirstAid.LOGGER.info(LoggingMarkers.REGISTRY, "Built {} FirstAid registry lookups", isRemote ? "remote" : "local");
+        TerraFirmaAid.LOGGER.info(LoggingMarkers.REGISTRY, "Built {} TerraFirmaAid registry lookups", isRemote ? "remote" : "local");
     }
 
     private static Map<DamageType, IDamageDistributionAlgorithm> buildDamageDistributions(RegistryAccess registryAccess) {
-        Registry<IDamageDistributionTarget> damageDistributionRegistry = registryAccess.registryOrThrow(FirstAidRegistries.Keys.DAMAGE_DISTRIBUTIONS);
+        Registry<IDamageDistributionTarget> damageDistributionRegistry = registryAccess.registryOrThrow(TerraFirmaAidRegistries.Keys.DAMAGE_DISTRIBUTIONS);
 
         Map<DamageType, IDamageDistributionAlgorithm> staticAlgorithms = new HashMap<>();
         Map<DamageType, IDamageDistributionAlgorithm> dynamicAlgorithms = new HashMap<>();
@@ -88,7 +88,7 @@ public class FirstAidRegistryLookups {
             for (DamageType damageType : damageTypes) {
                 IDamageDistributionAlgorithm oldVal = mapToUse.put(damageType, algorithm);
                 if (oldVal != null) {
-                    FirstAid.LOGGER.warn(LoggingMarkers.REGISTRY, "Damage distribution {} overwrites previously registered distribution for damage type {}", key, damageType.msgId());
+                    TerraFirmaAid.LOGGER.warn(LoggingMarkers.REGISTRY, "Damage distribution {} overwrites previously registered distribution for damage type {}", key, damageType.msgId());
                 }
             }
         }
@@ -103,7 +103,7 @@ public class FirstAidRegistryLookups {
     }
 
     private static Map<EnumDebuffSlot, List<IDebuffBuilder>> buildDebuffs(RegistryAccess registryAccess) {
-        Registry<IDebuffBuilder> debuffBuilderRegistry = registryAccess.registryOrThrow(FirstAidRegistries.Keys.DEBUFFS);
+        Registry<IDebuffBuilder> debuffBuilderRegistry = registryAccess.registryOrThrow(TerraFirmaAidRegistries.Keys.DEBUFFS);
 
         EnumMap<EnumDebuffSlot, List<IDebuffBuilder>> debuffMap = new EnumMap<>(EnumDebuffSlot.class);
         for (Map.Entry<ResourceKey<IDebuffBuilder>, IDebuffBuilder> entry : debuffBuilderRegistry.entrySet()) {

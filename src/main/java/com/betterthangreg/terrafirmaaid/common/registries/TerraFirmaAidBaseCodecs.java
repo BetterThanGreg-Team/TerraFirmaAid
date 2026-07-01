@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,12 +33,12 @@ import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.MapLike;
 import java.util.stream.Stream;
 
-public class FirstAidBaseCodecs {
-    public static final Codec<IDebuffBuilder> DEBUFF_BUILDERS_DIRECT_CODEC = Codec.lazyInitialized(() -> FirstAidRegistries.DEBUFF_BUILDERS.byNameCodec())
+public class TerraFirmaAidBaseCodecs {
+    public static final Codec<IDebuffBuilder> DEBUFF_BUILDERS_DIRECT_CODEC = Codec.lazyInitialized(() -> TerraFirmaAidRegistries.DEBUFF_BUILDERS.byNameCodec())
             .dispatch(IDebuffBuilder::codec, codec -> toMapCodec(codec));
-    public static final Codec<IDamageDistributionAlgorithm> DAMAGE_DISTRIBUTION_ALGORITHMS_DIRECT_CODEC = Codec.lazyInitialized(() -> FirstAidRegistries.DAMAGE_DISTRIBUTION_ALGORITHMS.byNameCodec())
+    public static final Codec<IDamageDistributionAlgorithm> DAMAGE_DISTRIBUTION_ALGORITHMS_DIRECT_CODEC = Codec.lazyInitialized(() -> TerraFirmaAidRegistries.DAMAGE_DISTRIBUTION_ALGORITHMS.byNameCodec())
             .dispatch(IDamageDistributionAlgorithm::codec, codec -> toMapCodec(codec));
-    public static final Codec<IDamageDistributionTarget> DAMAGE_DISTRIBUTION_TARGETS_DIRECT_CODEC = Codec.lazyInitialized(() -> FirstAidRegistries.DAMAGE_DISTRIBUTION_TARGETS.byNameCodec())
+    public static final Codec<IDamageDistributionTarget> DAMAGE_DISTRIBUTION_TARGETS_DIRECT_CODEC = Codec.lazyInitialized(() -> TerraFirmaAidRegistries.DAMAGE_DISTRIBUTION_TARGETS.byNameCodec())
             .dispatch(IDamageDistributionTarget::codec, codec -> toMapCodec(codec));
 
     private static <T> MapCodec<T> toMapCodec(Codec<T> codec) {

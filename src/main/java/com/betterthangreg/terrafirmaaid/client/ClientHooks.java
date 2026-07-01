@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 package com.betterthangreg.terrafirmaaid.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.betterthangreg.terrafirmaaid.FirstAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.client.gui.GuiHealthScreen;
 import com.betterthangreg.terrafirmaaid.client.util.EventCalendar;
@@ -38,10 +38,10 @@ import net.neoforged.bus.api.IEventBus;
 import org.lwjgl.glfw.GLFW;
 
 public class ClientHooks {
-    public static final KeyMapping SHOW_WOUNDS = new KeyMapping("keybinds.show_wounds", KeyConflictContext.UNIVERSAL, InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_H), "First Aid");
+    public static final KeyMapping SHOW_WOUNDS = new KeyMapping("keybinds.show_wounds", KeyConflictContext.UNIVERSAL, InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_H), "TerraFirmaAid");
 
     public static void setup(IEventBus modEventBus) {
-        FirstAid.LOGGER.debug("Loading ClientHooks");
+        TerraFirmaAid.LOGGER.debug("Loading ClientHooks");
         NeoForge.EVENT_BUS.register(ClientEventHandler.class);
         modEventBus.addListener(ClientHooks::registerKeybindEvent);
         modEventBus.addListener(ClientHooks::registerOverlayEvent);
@@ -62,7 +62,7 @@ public class ClientHooks {
     }
 
     public static void registerOverlayEvent(RegisterGuiLayersEvent event) {
-        event.registerAbove(VanillaGuiLayers.PLAYER_HEALTH, ResourceLocation.fromNamespaceAndPath(FirstAid.MODID, "hud"), HUDHandler.INSTANCE::render);
+        event.registerAbove(VanillaGuiLayers.PLAYER_HEALTH, ResourceLocation.fromNamespaceAndPath(TerraFirmaAid.MODID, "hud"), HUDHandler.INSTANCE::render);
     }
 
     public static void registerReloadListenerEvent(RegisterClientReloadListenersEvent event) {

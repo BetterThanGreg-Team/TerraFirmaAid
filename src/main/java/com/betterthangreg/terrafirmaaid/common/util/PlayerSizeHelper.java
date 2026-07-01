@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,8 +18,8 @@
 
 package com.betterthangreg.terrafirmaaid.common.util;
 
-import com.betterthangreg.terrafirmaaid.FirstAid;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import com.betterthangreg.terrafirmaaid.api.distribution.IDamageDistributionAlgorithm;
 import com.betterthangreg.terrafirmaaid.api.enums.EnumPlayerPart;
 import com.betterthangreg.terrafirmaaid.common.AABBAlignedBoundingBox;
@@ -98,14 +98,14 @@ public class PlayerSizeHelper {
                 }
             }
             if (bestSlot != null) {
-                if (FirstAidConfig.GENERAL.debug.get()) {
-                    FirstAid.LOGGER.info("getSlotTypeForProjectileHit: Inflation: " + inflation + " best slot: " + bestSlot);
+                if (TerraFirmaAidConfig.GENERAL.debug.get()) {
+                    TerraFirmaAid.LOGGER.info("getSlotTypeForProjectileHit: Inflation: " + inflation + " best slot: " + bestSlot);
                 }
                 return bestSlot;
             }
         }
-        if (FirstAidConfig.GENERAL.debug.get()) {
-            FirstAid.LOGGER.info("getSlotTypeForProjectileHit: Not found!");
+        if (TerraFirmaAidConfig.GENERAL.debug.get()) {
+            TerraFirmaAid.LOGGER.info("getSlotTypeForProjectileHit: Not found!");
         }
         return null;
     }
@@ -126,15 +126,15 @@ public class PlayerSizeHelper {
                             allowedParts.add(entry.getKey());
                         }
                     }
-                    if (FirstAidConfig.GENERAL.debug.get()) {
-                        FirstAid.LOGGER.info("getMeleeDistribution: Has distribution with {}", allowedParts);
+                    if (TerraFirmaAidConfig.GENERAL.debug.get()) {
+                        TerraFirmaAid.LOGGER.info("getMeleeDistribution: Has distribution with {}", allowedParts);
                     }
                     if (allowedParts.isEmpty() && player.getY() > mobEntity.getY() && (player.getY() - mobEntity.getY()) < mobEntity.getBbHeight() * 2F) {
                         // HACK: y is at the bottom of the aabb of mobs, so the range of mobs to your feet is larger than the range of them to your head
                         // If no matching region can be found, but the y difference is within 2 times the bb height of the attacking mob
                         // This should be accurate enough (in theory)
-                        if (FirstAidConfig.GENERAL.debug.get()) {
-                            FirstAid.LOGGER.info("Hack adding feet");
+                        if (TerraFirmaAidConfig.GENERAL.debug.get()) {
+                            TerraFirmaAid.LOGGER.info("Hack adding feet");
                         }
                         allowedParts.add(EquipmentSlot.FEET);
                     }

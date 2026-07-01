@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,8 +18,8 @@
 
 package com.betterthangreg.terrafirmaaid.client;
 
-import com.betterthangreg.terrafirmaaid.FirstAid;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.Sound;
@@ -52,7 +52,7 @@ public class DebuffTimedSound implements TickableSoundInstance {
     private int ticks;
 
     public static void playHurtSound(SoundEvent event, int duration) {
-        if (!FirstAidConfig.CLIENT.enableSounds.get())
+        if (!TerraFirmaAidConfig.CLIENT.enableSounds.get())
             return;
         SoundManager soundHandler = Minecraft.getInstance().getSoundManager();
         DebuffTimedSound matchingSound = ACTIVE_SOUNDS.get(event);
@@ -96,7 +96,7 @@ public class DebuffTimedSound implements TickableSoundInstance {
 
         if (soundEventAccessor == null)
         {
-            FirstAid.LOGGER.warn("Missing sound for location " + this.soundLocation);
+            TerraFirmaAid.LOGGER.warn("Missing sound for location " + this.soundLocation);
             this.sound = SoundManager.EMPTY_SOUND;
         }
         else

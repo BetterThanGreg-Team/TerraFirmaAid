@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,12 +19,13 @@
 package com.betterthangreg.terrafirmaaid.client.util;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.betterthangreg.terrafirmaaid.FirstAid;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractDamageablePart;
 import com.betterthangreg.terrafirmaaid.api.enums.EnumPlayerPart;
 import com.betterthangreg.terrafirmaaid.client.gui.FlashStateManager;
 import com.betterthangreg.terrafirmaaid.common.EventHandler;
+import com.betterthangreg.terrafirmaaid.common.tfc.TFCCompat;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -41,7 +42,7 @@ import java.util.EnumMap;
 import java.util.Objects;
 
 public class HealthRenderUtils {
-    public static final ResourceLocation SHOW_WOUNDS_LOCATION = ResourceLocation.fromNamespaceAndPath(FirstAid.MODID, "textures/gui/show_wounds.png");
+    public static final ResourceLocation SHOW_WOUNDS_LOCATION = ResourceLocation.fromNamespaceAndPath(TerraFirmaAid.MODID, "textures/gui/show_wounds.png");
     public static final ResourceLocation GUI_ICONS_LOCATION = ResourceLocation.withDefaultNamespace("textures/gui/icons.png");
     public static final DecimalFormat TEXT_FORMAT = new DecimalFormat("0.0");
     private static final Object2IntOpenHashMap<EnumPlayerPart> prevHealth = new Object2IntOpenHashMap<>();
@@ -99,6 +100,12 @@ public class HealthRenderUtils {
     }
 
     public static void drawHealth(GuiGraphics guiGraphics, Font font, AbstractDamageablePart damageablePart, int xTranslation, int yTranslation, boolean allowSecondLine) {
+        // TFC-style horizontal bars when TFC is loaded and the config option is enabled
+        if (TFCCompat.shouldUseTFCStyleHealthGui()) {
+            drawHealthTFCStyle(guiGraphics, font, damageablePart, xTranslation, yTranslation);
+            return;
+        }
+
         int maxHealth = getMaxHearts(damageablePart.getMaxHealth());
         int maxExtraHealth = getMaxHearts(damageablePart.getAbsorption());
         int current = (int) Math.ceil(damageablePart.currentHealth);
@@ -116,7 +123,7 @@ public class HealthRenderUtils {
         Minecraft mc = Minecraft.getInstance();
         PoseStack stack = guiGraphics.pose();
         int regen = -1;
-        if (FirstAidConfig.SERVER.allowOtherHealingItems.get() && mc.player.hasEffect(MobEffects.REGENERATION))
+        if (TerraFirmaAidConfig.SERVER.allowOtherHealingItems.get() && mc.player.hasEffect(MobEffects.REGENERATION))
             regen = (int) ((mc.gui.getGuiTicks() / 2) % 15);
         boolean low = (current + absorption) < 1.25F;
 
@@ -236,5 +243,50 @@ public class HealthRenderUtils {
             guiGraphics.blitSprite(Gui.HeartType.ABSORBING.getSprite(hardcore, renderHalf, false), x, y, 9, 9);
             RenderSystem.disableBlend();
         }
+    }
+
+    /** Render a TFC-style horizontal health bar for a single body part. */
+    private static void drawHealthTFCStyle(GuiGraphics guiGraphics, Font font, AbstractDamageablePart damageablePart, int x, int y) {
+        float current = damageablePart.currentHealth;
+        float max = damageablePart.getMaxHealth();
+        float absorption = damageablePart.getAbsorption();
+        if (max <= 0) max = 1;
+
+        PoseStack stack = guiGraphics.pose();
+        stack.pushPose();
+        stack.translate(x, y, 0);
+
+        int barWidth = 81;
+        int barHeight = 9;
+
+        // Container background
+        guiGraphics.blit(TFCCompat.TFC_HEALTH_TEXTURE, 0, 0, 0, 0, barWidth, barHeight);
+
+        // Health fill
+        float percent = Math.min(current / max, 1.0F);
+        if (percent > 0) {
+            guiGraphics.blit(TFCCompat.TFC_HEALTH_TEXTURE, 0, 0, 0, 9, (int) (barWidth * percent), barHeight);
+        }
+
+        // Hurt flash (when entity was recently hurt)
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null && mc.player.hurtTime > 0) {
+            guiGraphics.blit(TFCCompat.TFC_HEALTH_TEXTURE, 0, 0, 0, 29, barWidth, barHeight);
+        }
+
+        // Absorption surplus
+        float surplus = Math.min((current + absorption) / max - 1.0F, 1.0F);
+        if (surplus > 0) {
+            guiGraphics.blit(TFCCompat.TFC_HEALTH_TEXTURE, 0, 0, 90, 9, (int) (barWidth * surplus), barHeight);
+        }
+
+        // Health text
+        String text = String.format("%.0f/%.0f", current * 50, max * 50);
+        int textX = barWidth / 2 - font.width(text) / 2;
+        int textY = 1;
+        guiGraphics.drawString(font, text, textX + 1, textY + 1, 0x680000, false);
+        guiGraphics.drawString(font, text, textX, textY, 0xFFFFFF, false);
+
+        stack.popPose();
     }
 }

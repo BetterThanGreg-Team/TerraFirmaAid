@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,8 +19,8 @@
 package com.betterthangreg.terrafirmaaid.common.util;
 
 import com.google.common.math.DoubleMath;
-import com.betterthangreg.terrafirmaaid.FirstAid;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.DamageTypeTags;
@@ -71,7 +71,7 @@ public class ArmorUtils {
     }
 
     private static double getArmorMultiplier(EquipmentSlot slot) {
-        FirstAidConfig.Server config = FirstAidConfig.SERVER;
+        TerraFirmaAidConfig.Server config = TerraFirmaAidConfig.SERVER;
         switch (slot) {
             case HEAD:
                 return config.headArmorMultiplier.get();
@@ -87,7 +87,7 @@ public class ArmorUtils {
     }
 
     private static double getArmorOffset(EquipmentSlot slot) {
-        FirstAidConfig.Server config = FirstAidConfig.SERVER;
+        TerraFirmaAidConfig.Server config = TerraFirmaAidConfig.SERVER;
         switch (slot) {
             case HEAD:
                 return config.headArmorOffset.get();
@@ -103,7 +103,7 @@ public class ArmorUtils {
     }
 
     private static double getToughnessMultiplier(EquipmentSlot slot) {
-        FirstAidConfig.Server config = FirstAidConfig.SERVER;
+        TerraFirmaAidConfig.Server config = TerraFirmaAidConfig.SERVER;
         switch (slot) {
             case HEAD:
                 return config.headThoughnessMultiplier.get();
@@ -119,7 +119,7 @@ public class ArmorUtils {
     }
 
     private static double getToughnessOffset(EquipmentSlot slot) {
-        FirstAidConfig.Server config = FirstAidConfig.SERVER;
+        TerraFirmaAidConfig.Server config = TerraFirmaAidConfig.SERVER;
         switch (slot) {
             case HEAD:
                 return config.headThoughnessOffset.get();
@@ -153,8 +153,8 @@ public class ArmorUtils {
         double all = player.getAttributeValue(attribute);
         if (!DoubleMath.fuzzyEquals(sumOfAllAttributes, all, 0.001D)) {
             double diff = all - sumOfAllAttributes;
-            if (FirstAidConfig.GENERAL.debug.get()) {
-                FirstAid.LOGGER.info("Attribute value for {} does not match sum! Diff is {}, distributing to all!", net.minecraft.core.registries.BuiltInRegistries.ATTRIBUTE.getKey(attribute.value()), diff);
+            if (TerraFirmaAidConfig.GENERAL.debug.get()) {
+                TerraFirmaAid.LOGGER.info("Attribute value for {} does not match sum! Diff is {}, distributing to all!", net.minecraft.core.registries.BuiltInRegistries.ATTRIBUTE.getKey(attribute.value()), diff);
             }
             return diff;
         }
@@ -197,7 +197,7 @@ public class ArmorUtils {
             return damage;
         if (player.hasEffect(MobEffects.DAMAGE_RESISTANCE) && source != player.damageSources().fellOutOfWorld()) {
             @SuppressWarnings("ConstantConditions")
-            int i = (player.getEffect(MobEffects.DAMAGE_RESISTANCE).getAmplifier() + 1) * FirstAidConfig.SERVER.resistanceReductionPercentPerLevel.get();
+            int i = (player.getEffect(MobEffects.DAMAGE_RESISTANCE).getAmplifier() + 1) * TerraFirmaAidConfig.SERVER.resistanceReductionPercentPerLevel.get();
             int j = 100 - i;
             float f = damage * (float) j;
             float f1 = damage;
@@ -221,8 +221,8 @@ public class ArmorUtils {
     @SuppressWarnings("JavadocReference")
     public static float applyEnchantmentModifiers(Player player, EquipmentSlot slot, DamageSource source, float damage) {
         float k = 0F;
-        FirstAidConfig.Server.ArmorEnchantmentMode enchantmentMode = FirstAidConfig.SERVER.armorEnchantmentMode.get();
-        if (enchantmentMode == FirstAidConfig.Server.ArmorEnchantmentMode.LOCAL_ENCHANTMENTS) {
+        TerraFirmaAidConfig.Server.ArmorEnchantmentMode enchantmentMode = TerraFirmaAidConfig.SERVER.armorEnchantmentMode.get();
+        if (enchantmentMode == TerraFirmaAidConfig.Server.ArmorEnchantmentMode.LOCAL_ENCHANTMENTS) {
             ItemStack itemStackFromSlot = player.getItemBySlot(slot);
             if (player.level() instanceof ServerLevel serverLevel) {
                 // Save other slots
@@ -243,26 +243,26 @@ public class ArmorUtils {
                 }
             }
             ItemEnchantments enchantments = itemStackFromSlot.getOrDefault(net.minecraft.core.component.DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
-            int multiplier = FirstAidConfig.SERVER.enchantmentMultiplier.get();
-            boolean debug = FirstAidConfig.GENERAL.debug.get();
+            int multiplier = TerraFirmaAidConfig.SERVER.enchantmentMultiplier.get();
+            boolean debug = TerraFirmaAidConfig.GENERAL.debug.get();
             for (java.util.Map.Entry<net.minecraft.core.Holder<net.minecraft.world.item.enchantment.Enchantment>, Integer> entry : enchantments.entrySet()) {
                 net.minecraft.core.Holder<net.minecraft.world.item.enchantment.Enchantment> enchantment = entry.getKey();
                 String enchantRlAsString = enchantment.unwrapKey().map(key -> key.location().toString()).orElse("");
-                List<? extends String> resourceLocation = FirstAidConfig.SERVER.enchMulOverrideResourceLocations.get();
-                List<? extends Integer> multiplierOverride = FirstAidConfig.SERVER.enchMulOverrideMultiplier.get();
+                List<? extends String> resourceLocation = TerraFirmaAidConfig.SERVER.enchMulOverrideResourceLocations.get();
+                List<? extends Integer> multiplierOverride = TerraFirmaAidConfig.SERVER.enchMulOverrideMultiplier.get();
                 for (int i = 0; i < Math.min(resourceLocation.size(), multiplierOverride.size()); i++) {
                     String s = resourceLocation.get(i);
                     if (s.equals(enchantRlAsString)) {
                         multiplier = multiplierOverride.get(i);
                         if (debug) {
-                            FirstAid.LOGGER.info("Found enchantment multiplier override for {}, new value is {}", enchantRlAsString, multiplier);
+                            TerraFirmaAid.LOGGER.info("Found enchantment multiplier override for {}, new value is {}", enchantRlAsString, multiplier);
                         }
                         break;
                     }
                 }
             }
             k = k * multiplier;
-        } else if (enchantmentMode == FirstAidConfig.Server.ArmorEnchantmentMode.GLOBAL_ENCHANTMENTS) {
+        } else if (enchantmentMode == TerraFirmaAidConfig.Server.ArmorEnchantmentMode.GLOBAL_ENCHANTMENTS) {
             k = player.level() instanceof ServerLevel serverLevel ? EnchantmentHelper.getDamageProtection(serverLevel, player, source) : 0;
         } else {
             throw new RuntimeException("What dark magic is " + enchantmentMode);

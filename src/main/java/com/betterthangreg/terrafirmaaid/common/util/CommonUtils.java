@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,8 +19,8 @@
 package com.betterthangreg.terrafirmaaid.common.util;
 
 import com.google.common.primitives.Ints;
-import com.betterthangreg.terrafirmaaid.FirstAid;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractDamageablePart;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.api.enums.EnumPlayerPart;
@@ -74,11 +74,11 @@ public class CommonUtils {
             try {
                 throw new RuntimeException("Tried to kill the player on the client!");
             } catch (RuntimeException e) {
-                FirstAid.LOGGER.warn("Tried to kill the player on the client! This should only happen on the server! Ignoring...", e);
+                TerraFirmaAid.LOGGER.warn("Tried to kill the player on the client! This should only happen on the server! Ignoring...", e);
             }
         }
         SynchedEntityDataWrapper wrapper = (SynchedEntityDataWrapper) player.entityData;
-        if (source != null && FirstAidConfig.SERVER.allowOtherHealingItems.get()) {
+        if (source != null && TerraFirmaAidConfig.SERVER.allowOtherHealingItems.get()) {
             boolean protection;
             wrapper.toggleTracking(false);
             try {
@@ -117,11 +117,11 @@ public class CommonUtils {
     }
 
     public static void debugLogStacktrace(String name) {
-        if (!FirstAidConfig.GENERAL.debug.get()) return;
+        if (!TerraFirmaAidConfig.GENERAL.debug.get()) return;
         try {
             throw new RuntimeException("DEBUG:" + name);
         } catch (RuntimeException e) {
-            FirstAid.LOGGER.info("DEBUG: " + name, e);
+            TerraFirmaAid.LOGGER.info("DEBUG: " + name, e);
         }
     }
 
@@ -133,11 +133,11 @@ public class CommonUtils {
         } catch (IllegalArgumentException e) {
             // This is a band-aid solution, as bug reports about this keep coming up and these are really hard to debug bugs
             // I don't have the time to correctly debug this, so it seems like there is no other way right now
-            if (FirstAidConfig.GENERAL.debug.get()) {
-                FirstAid.LOGGER.fatal("Mandatory damage model missing!", e);
+            if (TerraFirmaAidConfig.GENERAL.debug.get()) {
+                TerraFirmaAid.LOGGER.fatal("Mandatory damage model missing!", e);
                 throw e;
             } else {
-                FirstAid.LOGGER.error("Missing a damage model, skipping further processing!", e);
+                TerraFirmaAid.LOGGER.error("Missing a damage model, skipping further processing!", e);
                 return null;
             }
         }

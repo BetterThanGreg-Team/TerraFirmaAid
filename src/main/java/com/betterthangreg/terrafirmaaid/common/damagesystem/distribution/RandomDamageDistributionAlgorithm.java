@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@ package com.betterthangreg.terrafirmaaid.common.damagesystem.distribution;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractDamageablePart;
 import com.betterthangreg.terrafirmaaid.api.enums.EnumPlayerPart;
 import com.betterthangreg.terrafirmaaid.common.util.CommonUtils;
@@ -44,7 +44,7 @@ public class RandomDamageDistributionAlgorithm extends DamageDistribution {
     public static final RandomDamageDistributionAlgorithm ANY_KILL = new RandomDamageDistributionAlgorithm(false, false);
 
     public static RandomDamageDistributionAlgorithm getDefault() {
-        return FirstAidConfig.SERVER.useFriendlyRandomDistribution.get() ? NEAREST_NOKILL : NEAREST_KILL;
+        return TerraFirmaAidConfig.SERVER.useFriendlyRandomDistribution.get() ? NEAREST_NOKILL : NEAREST_KILL;
     }
 
     public static RandomDamageDistributionAlgorithm pick(boolean nearestFirst, boolean tryNoKill) {

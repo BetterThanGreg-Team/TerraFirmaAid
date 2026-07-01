@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,12 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.betterthangreg.terrafirmaaid.client.tutorial;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.betterthangreg.terrafirmaaid.FirstAid;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.client.ClientHooks;
 import com.betterthangreg.terrafirmaaid.client.gui.GuiHealthScreen;
@@ -34,7 +33,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class GuiTutorial extends Screen {
@@ -45,7 +43,7 @@ public class GuiTutorial extends Screen {
 
     @SuppressWarnings("deprecation") // we still need this method
     public GuiTutorial() {
-        super(Component.translatable("terrafirmaaid.tutorial"));
+        super(Component.translatable("terrafirmaaid.gui.tutorial"));
         this.demoModel = new PlayerDamageModel();
         this.parent = new GuiHealthScreen(demoModel);
         this.action = new TutorialAction(this);
@@ -60,7 +58,7 @@ public class GuiTutorial extends Screen {
         this.action.addTextWrapper("terrafirmaaid.tutorial.line4");
         this.action.addTextWrapper("terrafirmaaid.tutorial.line5");
         this.action.addActionCallable(guiTutorial -> guiTutorial.demoModel.LEFT_FOOT.heal(3F, null, false));
-        if (FirstAidConfig.SERVER.sleepHealPercentage.get() != 0D)
+        if (TerraFirmaAidConfig.SERVER.sleepHealPercentage.get() != 0D)
             this.action.addTextWrapper("terrafirmaaid.tutorial.sleephint");
         this.action.addTextWrapper("terrafirmaaid.tutorial.line6");
         this.action.addActionCallable(guiTutorial -> guiTutorial.demoModel.HEAD.damage(16F, null, false));

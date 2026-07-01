@@ -1,5 +1,5 @@
 /*
- * FirstAid API
+ * TerraFirmaAid API
  * Copyright (c) 2017-2024
  *
  * This library is free software; you can redistribute it and/or

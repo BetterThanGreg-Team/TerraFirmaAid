@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,13 +18,13 @@
 
 package com.betterthangreg.terrafirmaaid.common.damagesystem.distribution;
 
-import com.betterthangreg.terrafirmaaid.FirstAid;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractDamageablePart;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.api.distribution.IDamageDistributionAlgorithm;
 import com.betterthangreg.terrafirmaaid.api.enums.EnumPlayerPart;
-import com.betterthangreg.terrafirmaaid.api.event.FirstAidLivingDamageEvent;
+import com.betterthangreg.terrafirmaaid.api.event.TerraFirmaAidLivingDamageEvent;
 import com.betterthangreg.terrafirmaaid.common.RegistryObjects;
 import com.betterthangreg.terrafirmaaid.common.damagesystem.PlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.common.network.MessageUpdatePart;
@@ -51,8 +51,8 @@ import java.util.List;
 public abstract class DamageDistribution implements IDamageDistributionAlgorithm {
 
     public static float handleDamageTaken(IDamageDistributionAlgorithm damageDistribution, AbstractPlayerDamageModel damageModel, float damage, @Nonnull Player player, @Nonnull DamageSource source, boolean addStat, boolean redistributeIfLeft) {
-        if (FirstAidConfig.GENERAL.debug.get()) {
-            FirstAid.LOGGER.info(LoggingMarkers.DAMAGE_DISTRIBUTION, "--- Damaging {} using {} for dmg source {}, redistribute {}, addStat {} ---", damage, damageDistribution.toString(), source.type().msgId(), redistributeIfLeft, addStat);
+        if (TerraFirmaAidConfig.GENERAL.debug.get()) {
+            TerraFirmaAid.LOGGER.info(LoggingMarkers.DAMAGE_DISTRIBUTION, "--- Damaging {} using {} for dmg source {}, redistribute {}, addStat {} ---", damage, damageDistribution.toString(), source.type().msgId(), redistributeIfLeft, addStat);
         }
         CompoundTag beforeCache = damageModel.serializeNBT(player.level().registryAccess());
         if (!damageDistribution.skipGlobalPotionModifiers())
@@ -75,18 +75,18 @@ public abstract class DamageDistribution implements IDamageDistributionAlgorithm
         }
         PlayerDamageModel before = new PlayerDamageModel();
         before.deserializeNBT(player.level().registryAccess(), beforeCache);
-        if (NeoForge.EVENT_BUS.post(new FirstAidLivingDamageEvent(player, damageModel, before, source, left)).isCanceled()) {
+        if (NeoForge.EVENT_BUS.post(new TerraFirmaAidLivingDamageEvent(player, damageModel, before, source, left)).isCanceled()) {
             damageModel.deserializeNBT(player.level().registryAccess(), beforeCache); //restore prev state
-            if (FirstAidConfig.GENERAL.debug.get()) {
-                FirstAid.LOGGER.info(LoggingMarkers.DAMAGE_DISTRIBUTION, "--- DONE! Event got canceled ---");
+            if (TerraFirmaAidConfig.GENERAL.debug.get()) {
+                TerraFirmaAid.LOGGER.info(LoggingMarkers.DAMAGE_DISTRIBUTION, "--- DONE! Event got canceled ---");
             }
             return 0F;
         }
 
         if (damageModel.isDead(player))
             CommonUtils.killPlayer(damageModel, player, source);
-        if (FirstAidConfig.GENERAL.debug.get()) {
-            FirstAid.LOGGER.info(LoggingMarkers.DAMAGE_DISTRIBUTION, "--- DONE! {} still left ---", left);
+        if (TerraFirmaAidConfig.GENERAL.debug.get()) {
+            TerraFirmaAid.LOGGER.info(LoggingMarkers.DAMAGE_DISTRIBUTION, "--- DONE! {} still left ---", left);
         }
         return left;
     }
@@ -111,7 +111,7 @@ public abstract class DamageDistribution implements IDamageDistributionAlgorithm
             if (damage == 0)
                 break;
             else if (damage < 0) {
-                FirstAid.LOGGER.error(LoggingMarkers.DAMAGE_DISTRIBUTION, "Got negative damage {} left? Logic error? ", damage);
+                TerraFirmaAid.LOGGER.error(LoggingMarkers.DAMAGE_DISTRIBUTION, "Got negative damage {} left? Logic error? ", damage);
                 break;
             }
         }
@@ -126,8 +126,8 @@ public abstract class DamageDistribution implements IDamageDistributionAlgorithm
         if (damage <= 0F) return 0F;
         AbstractPlayerDamageModel damageModel = CommonUtils.getDamageModel(player);
         if (damageModel == null) return 0F;
-        if (FirstAidConfig.GENERAL.debug.get()) {
-            FirstAid.LOGGER.info(LoggingMarkers.DAMAGE_DISTRIBUTION, "Starting distribution of {} damage...", damage);
+        if (TerraFirmaAidConfig.GENERAL.debug.get()) {
+            TerraFirmaAid.LOGGER.info(LoggingMarkers.DAMAGE_DISTRIBUTION, "Starting distribution of {} damage...", damage);
         }
         for (Pair<EquipmentSlot, EnumPlayerPart[]> pair : getPartList()) {
             EquipmentSlot slot = pair.getLeft();
@@ -152,11 +152,11 @@ public abstract class DamageDistribution implements IDamageDistributionAlgorithm
                 final float absorbFactor = originalDamage / dmgAfterReduce;
                 final float damageDistributed = dmgAfterReduce - damage;
                 damage = originalDamage - (damageDistributed * absorbFactor);
-                if (FirstAidConfig.GENERAL.debug.get()) {
-                    FirstAid.LOGGER.info(LoggingMarkers.DAMAGE_DISTRIBUTION, "Distribution round: Not done yet, going to next round. Needed to distribute {} damage (reduced to {}) to {}, but only distributed {}. New damage to be distributed is {}, based on absorb factor {}", originalDamage, dmgAfterReduce, slot, damageDistributed, damage, absorbFactor);
+                if (TerraFirmaAidConfig.GENERAL.debug.get()) {
+                    TerraFirmaAid.LOGGER.info(LoggingMarkers.DAMAGE_DISTRIBUTION, "Distribution round: Not done yet, going to next round. Needed to distribute {} damage (reduced to {}) to {}, but only distributed {}. New damage to be distributed is {}, based on absorb factor {}", originalDamage, dmgAfterReduce, slot, damageDistributed, damage, absorbFactor);
                 }
-            } else if (FirstAidConfig.GENERAL.debug.get()) {
-                FirstAid.LOGGER.info(LoggingMarkers.DAMAGE_DISTRIBUTION, "Skipping {}, no health > min in parts!", slot);
+            } else if (TerraFirmaAidConfig.GENERAL.debug.get()) {
+                TerraFirmaAid.LOGGER.info(LoggingMarkers.DAMAGE_DISTRIBUTION, "Skipping {}, no health > min in parts!", slot);
             }
         }
         return damage;

@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,12 +19,12 @@
 package com.betterthangreg.terrafirmaaid.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.betterthangreg.terrafirmaaid.FirstAid;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPartHealer;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.api.healing.ItemHealing;
-import com.betterthangreg.terrafirmaaid.client.gui.FirstaidIngameGui;
+import com.betterthangreg.terrafirmaaid.client.gui.TerraFirmaAidIngameGui;
 import com.betterthangreg.terrafirmaaid.client.gui.GuiHealthScreen;
 import com.betterthangreg.terrafirmaaid.client.tutorial.GuiTutorial;
 import com.betterthangreg.terrafirmaaid.client.util.EventCalendar;
@@ -108,11 +108,15 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void preRender(RenderGuiLayerEvent.Pre event) {
         if (event.getName().equals(VanillaGuiLayers.PLAYER_HEALTH)) {
-            FirstAidConfig.Client.VanillaHealthbarMode vanillaHealthBarMode = FirstAidConfig.CLIENT.vanillaHealthBarMode.get();
-            if (vanillaHealthBarMode != FirstAidConfig.Client.VanillaHealthbarMode.NORMAL) {
+            // TFC compatibility: let TFC render its own health bar when TFC health GUI is enabled
+            if (com.betterthangreg.terrafirmaaid.common.tfc.TFCCompat.shouldUseTFCStyleHealthGui()) {
+                return; // TFC renders its own health bar
+            }
+            TerraFirmaAidConfig.Client.VanillaHealthbarMode vanillaHealthBarMode = TerraFirmaAidConfig.CLIENT.vanillaHealthBarMode.get();
+            if (vanillaHealthBarMode != TerraFirmaAidConfig.Client.VanillaHealthbarMode.NORMAL) {
                 event.setCanceled(true);
-                if (com.betterthangreg.terrafirmaaid.client.ClientHooks.shouldDrawSurvivalElements() && vanillaHealthBarMode == FirstAidConfig.Client.VanillaHealthbarMode.HIGHLIGHT_CRITICAL_PATH && FirstAidConfig.SERVER.vanillaHealthCalculation.get() == FirstAidConfig.Server.VanillaHealthCalculationMode.AVERAGE_ALL) {
-                    FirstaidIngameGui.renderHealth(Minecraft.getInstance().gui, event.getGuiGraphics().guiWidth(), event.getGuiGraphics().guiHeight(), event.getGuiGraphics());
+                if (com.betterthangreg.terrafirmaaid.client.ClientHooks.shouldDrawSurvivalElements() && vanillaHealthBarMode == TerraFirmaAidConfig.Client.VanillaHealthbarMode.HIGHLIGHT_CRITICAL_PATH && TerraFirmaAidConfig.SERVER.vanillaHealthCalculation.get() == TerraFirmaAidConfig.Server.VanillaHealthCalculationMode.AVERAGE_ALL) {
+                    TerraFirmaAidIngameGui.renderHealth(Minecraft.getInstance().gui, event.getGuiGraphics().guiWidth(), event.getGuiGraphics().guiHeight(), event.getGuiGraphics());
                 }
             }
         }
@@ -164,7 +168,7 @@ public class ClientEventHandler {
 
     private static <T> void replaceOrAppend(List<T> list, T search, T replace) {
         int index = list.indexOf(search);
-        if (FirstAidConfig.CLIENT.armorTooltipMode.get() == FirstAidConfig.Client.TooltipMode.REPLACE && index >= 0) {
+        if (TerraFirmaAidConfig.CLIENT.armorTooltipMode.get() == TerraFirmaAidConfig.Client.TooltipMode.REPLACE && index >= 0) {
             list.set(index, replace);
         } else {
             list.add(replace);
@@ -180,7 +184,7 @@ public class ClientEventHandler {
             event.getToolTip().add(Component.translatable("terrafirmaaid.tooltip.morphine", "3:30-4:30"));
             return;
         }
-        if (FirstAidConfig.CLIENT.armorTooltipMode.get() != FirstAidConfig.Client.TooltipMode.NONE) {
+        if (TerraFirmaAidConfig.CLIENT.armorTooltipMode.get() != TerraFirmaAidConfig.Client.TooltipMode.NONE) {
             if (item instanceof ArmorItem armor) {
                 List<Component> tooltip = event.getToolTip();
 
@@ -220,7 +224,7 @@ public class ClientEventHandler {
                             List<Component> toolTip = event.getToolTip();
                             int index = toolTip.indexOf(raw);
                             if (index != -1) {
-                                Component replacement = (Component.translatable("attribute.modifier.plus." + realModifier.operation().id(), net.minecraft.world.item.component.ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(d1 * ((float) FirstAidConfig.SERVER.resistanceReductionPercentPerLevel.get() / 20F)), Component.translatable(holder.value().getDescriptionId()))).withStyle(ChatFormatting.BLUE);
+                                Component replacement = (Component.translatable("attribute.modifier.plus." + realModifier.operation().id(), net.minecraft.world.item.component.ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(d1 * ((float) TerraFirmaAidConfig.SERVER.resistanceReductionPercentPerLevel.get() / 20F)), Component.translatable(holder.value().getDescriptionId()))).withStyle(ChatFormatting.BLUE);
                                 toolTip.set(index, replacement);
                             }
                         });
@@ -240,7 +244,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void onDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
-        FirstAid.isSynced = false;
+        TerraFirmaAid.isSynced = false;
         HUDHandler.INSTANCE.ticker = -1;
     }
 }

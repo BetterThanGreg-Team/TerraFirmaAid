@@ -10,6 +10,8 @@ displayName="${mod_name}"
 description='''
 TerraFirmaAid is a port of the original First Aid mod by ichttt to Minecraft 1.21.1 and NeoForge.
 It implements a limb-based health system instead of the vanilla global health system.
+When TerraFirmaCraft is present, seamlessly integrates with TFC's health, nutrition, and HP scaling systems.
+
 '''
 credits="Thanks to ichttt for the original First Aid mod!"
 
@@ -24,6 +26,20 @@ credits="Thanks to ichttt for the original First Aid mod!"
     modId="minecraft"
     type="required"
     versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="tfc"
+    type="optional"
+    versionRange="[4.0,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="patchouli"
+    type="optional"
+    versionRange="[1.21.1-92-NEOFORGE,)"
     ordering="NONE"
     side="BOTH"
 

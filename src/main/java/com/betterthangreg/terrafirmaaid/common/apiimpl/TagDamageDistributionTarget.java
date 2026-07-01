@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.betterthangreg.terrafirmaaid.api.distribution.IDamageDistributionAlgorithm;
 import com.betterthangreg.terrafirmaaid.api.distribution.IDamageDistributionTarget;
-import com.betterthangreg.terrafirmaaid.common.registries.FirstAidBaseCodecs;
+import com.betterthangreg.terrafirmaaid.common.registries.TerraFirmaAidBaseCodecs;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -36,7 +36,7 @@ public class TagDamageDistributionTarget implements IDamageDistributionTarget {
 
     public static final Codec<TagDamageDistributionTarget> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
-                    FirstAidBaseCodecs.DAMAGE_DISTRIBUTION_ALGORITHMS_DIRECT_CODEC.fieldOf("algorithm").forGetter(o -> o.algorithm),
+                    TerraFirmaAidBaseCodecs.DAMAGE_DISTRIBUTION_ALGORITHMS_DIRECT_CODEC.fieldOf("algorithm").forGetter(o -> o.algorithm),
                     TagKey.codec(Registries.DAMAGE_TYPE).fieldOf("tag").forGetter(o -> o.tag)
             ).apply(instance, TagDamageDistributionTarget::new)
     );

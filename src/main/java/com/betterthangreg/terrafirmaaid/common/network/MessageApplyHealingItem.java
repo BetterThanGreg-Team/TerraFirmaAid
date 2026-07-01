@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 package com.betterthangreg.terrafirmaaid.common.network;
 
-import com.betterthangreg.terrafirmaaid.FirstAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractDamageablePart;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPartHealer;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
@@ -38,7 +38,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class MessageApplyHealingItem implements CustomPacketPayload {
-    public static final Type<MessageApplyHealingItem> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FirstAid.MODID, "apply_healing_item"));
+    public static final Type<MessageApplyHealingItem> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(TerraFirmaAid.MODID, "apply_healing_item"));
 
     public static final StreamCodec<FriendlyByteBuf, MessageApplyHealingItem> STREAM_CODEC = StreamCodec.of(
         (buf, msg) -> msg.encode(buf),
@@ -79,7 +79,7 @@ public class MessageApplyHealingItem implements CustomPacketPayload {
                 healer = itemHealing.createNewHealer(stack);
             }
             if (healer == null) {
-                FirstAid.LOGGER.warn(LoggingMarkers.NETWORK, "Player {} has invalid item in hand {} while it should be an healing item", player.getName(), BuiltInRegistries.ITEM.getKey(stack.getItem()));
+                TerraFirmaAid.LOGGER.warn(LoggingMarkers.NETWORK, "Player {} has invalid item in hand {} while it should be an healing item", player.getName(), BuiltInRegistries.ITEM.getKey(stack.getItem()));
                 player.sendSystemMessage(Component.literal("Unable to apply healing item!"));
                 return;
             }

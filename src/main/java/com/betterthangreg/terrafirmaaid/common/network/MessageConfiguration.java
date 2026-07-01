@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 package com.betterthangreg.terrafirmaaid.common.network;
 
-import com.betterthangreg.terrafirmaaid.FirstAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.client.ClientHooks;
 import com.betterthangreg.terrafirmaaid.client.HUDHandler;
@@ -36,7 +36,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class MessageConfiguration implements CustomPacketPayload {
-    public static final Type<MessageConfiguration> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FirstAid.MODID, "configuration"));
+    public static final Type<MessageConfiguration> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(TerraFirmaAid.MODID, "configuration"));
 
     public static final StreamCodec<FriendlyByteBuf, MessageConfiguration> STREAM_CODEC = StreamCodec.of(
         (buf, msg) -> msg.encode(buf),
@@ -63,7 +63,7 @@ public class MessageConfiguration implements CustomPacketPayload {
     }
 
     public static void handle(final MessageConfiguration message, final IPayloadContext context) {
-        FirstAid.LOGGER.info(LoggingMarkers.NETWORK, "Received remote damage model");
+        TerraFirmaAid.LOGGER.info(LoggingMarkers.NETWORK, "Received remote damage model");
         context.enqueueWork(() -> {
             AbstractPlayerDamageModel damageModel = CommonUtils.getDamageModel(Minecraft.getInstance().player);
             if (damageModel == null) return;
@@ -73,8 +73,8 @@ public class MessageConfiguration implements CustomPacketPayload {
             else
                 Minecraft.getInstance().player.sendSystemMessage(Component.literal("[First Aid] " + I18n.get("terrafirmaaid.tutorial.hint", ClientHooks.SHOW_WOUNDS.getTranslatedKeyMessage().getString())));
             HUDHandler.INSTANCE.ticker = 200;
-            FirstAid.isSynced = true;
-            FirstAid.LOGGER.debug(LoggingMarkers.NETWORK, "Sync complete");
+            TerraFirmaAid.isSynced = true;
+            TerraFirmaAid.LOGGER.debug(LoggingMarkers.NETWORK, "Sync complete");
         });
     }
 }

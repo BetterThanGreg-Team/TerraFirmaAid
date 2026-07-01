@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@ import com.betterthangreg.terrafirmaaid.common.EventHandler;
 import com.betterthangreg.terrafirmaaid.common.RegistryObjects;
 import com.betterthangreg.terrafirmaaid.common.apiimpl.HealingItemApiHelperImpl;
 import com.betterthangreg.terrafirmaaid.common.network.*;
-import com.betterthangreg.terrafirmaaid.common.registries.FirstAidRegistries;
+import com.betterthangreg.terrafirmaaid.common.registries.TerraFirmaAidRegistries;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -39,25 +39,25 @@ import net.neoforged.fml.ModContainer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(FirstAid.MODID)
-public class FirstAid {
+@Mod(TerraFirmaAid.MODID)
+public class TerraFirmaAid {
     public static final String MODID = "terrafirmaaid";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
     public static boolean isSynced = false;
 
-    public FirstAid(IEventBus bus, ModContainer container) {
+    public TerraFirmaAid(IEventBus bus, ModContainer container) {
         NeoForge.EVENT_BUS.register(EventHandler.class);
         bus.addListener(this::init);
         bus.addListener(this::registerCreativeTab);
         bus.addListener(this::registerPayloads);
         
         RegistryObjects.registerToBus(bus);
-        FirstAidRegistries.setup(bus);
+        TerraFirmaAidRegistries.setup(bus);
 
-        container.registerConfig(ModConfig.Type.SERVER, FirstAidConfig.serverSpec);
-        container.registerConfig(ModConfig.Type.COMMON, FirstAidConfig.generalSpec);
-        container.registerConfig(ModConfig.Type.CLIENT, FirstAidConfig.clientSpec);
+        container.registerConfig(ModConfig.Type.SERVER, TerraFirmaAidConfig.serverSpec);
+        container.registerConfig(ModConfig.Type.COMMON, TerraFirmaAidConfig.generalSpec);
+        container.registerConfig(ModConfig.Type.CLIENT, TerraFirmaAidConfig.clientSpec);
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             ClientHooks.setup(bus);
@@ -77,10 +77,10 @@ public class FirstAid {
 
     public void init(FMLCommonSetupEvent event) {
         LOGGER.info("{} starting...", MODID);
-        if (FirstAidConfig.GENERAL.debug.get()) {
+        if (TerraFirmaAidConfig.GENERAL.debug.get()) {
             LOGGER.warn("DEBUG MODE ENABLED");
-            LOGGER.warn("FirstAid may be slower than usual and will produce much noisier logs if debug mode is enabled");
-            LOGGER.warn("Disable debug in firstaid config");
+            LOGGER.warn("TerraFirmaAid may be slower than usual and will produce much noisier logs if debug mode is enabled");
+            LOGGER.warn("Disable debug in terrafirmaaid config");
         }
     }
 

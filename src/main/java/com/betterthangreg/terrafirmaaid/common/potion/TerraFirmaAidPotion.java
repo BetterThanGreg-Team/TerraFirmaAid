@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,8 +26,8 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FirstAidPotion extends MobEffect {
-    public FirstAidPotion(MobEffectCategory type, int liquidColorIn) {
+public class TerraFirmaAidPotion extends MobEffect {
+    public TerraFirmaAidPotion(MobEffectCategory type, int liquidColorIn) {
         super(type, liquidColorIn);
     }
 }

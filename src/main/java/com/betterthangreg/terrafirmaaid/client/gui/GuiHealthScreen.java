@@ -1,5 +1,5 @@
 /*
- * FirstAid
+ * TerraFirmaAid
  * Copyright (C) 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,8 +21,8 @@ package com.betterthangreg.terrafirmaaid.client.gui;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.betterthangreg.terrafirmaaid.FirstAid;
-import com.betterthangreg.terrafirmaaid.FirstAidConfig;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAid;
+import com.betterthangreg.terrafirmaaid.TerraFirmaAidConfig;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractDamageablePart;
 import com.betterthangreg.terrafirmaaid.api.damagesystem.AbstractPlayerDamageModel;
 import com.betterthangreg.terrafirmaaid.api.enums.EnumPlayerPart;
@@ -136,7 +136,7 @@ public class GuiHealthScreen extends Screen {
         if (this.minecraft.getDebugOverlay().showDebugScreen()) {
             Button refresh = Button.builder(Component.literal("resync"), button -> {
                 PacketDistributor.sendToServer(new MessageClientRequest(MessageClientRequest.TypeEnum.REQUEST_REFRESH));
-                FirstAid.LOGGER.info("Requesting refresh");
+                TerraFirmaAid.LOGGER.info("Requesting refresh");
                 minecraft.player.displayClientMessage(Component.literal("Re-downloading health data from server..."), true);
                 onClose();
             }).bounds(this.guiLeft + 218, this.guiTop + 115, 36, 20).build();
@@ -232,7 +232,7 @@ public class GuiHealthScreen extends Screen {
         guiGraphics.pose().popPose();
 
         //Sleep info setup
-        double sleepHealing = FirstAidConfig.SERVER.sleepHealPercentage.get();
+        double sleepHealing = TerraFirmaAidConfig.SERVER.sleepHealPercentage.get();
         int bedX = guiLeft + 3;
         int bedY = (guiTop + ySize) - 19;
 
